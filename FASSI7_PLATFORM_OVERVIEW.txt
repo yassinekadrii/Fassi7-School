@@ -1,0 +1,182 @@
+================================================================================
+          FASSI7 (فصيح) - COMPLETE LANGUAGE ACADEMY PLATFORM OVERVIEW
+================================================================================
+
+1. BRAND IDENTITY & VISUAL DESIGN SYSTEM
+--------------------------------------------------------------------------------
+* Brand Heritage: Rebranded from "Multilinguo Academy" to "Fassi7 (فصيح)" (meaning "Fluent / Eloquent").
+* Core Brand Colors:
+  - Primary Orange:  #FA461D  (Action buttons, accents, highlights)
+  - Golden Yellow:   #FFAD18  (Popular badges, review stars, secondary accents)
+  - Dark Brown:      #3D1B0D  (Typography headings, high-contrast text)
+  - Warm Off-White:  #FFF9F4  (Section backgrounds, card surfaces)
+  - Pure White:      #FFFFFF  (Card interiors, modals, contrast elements)
+* Multilingual & Bidirectional Layout:
+  - Full native support for Arabic (العربية), English (GB), and French (Français).
+  - Dynamic RTL (Right-to-Left) direction for Arabic and LTR for English/French.
+  - Native Algerian currency formatting (DZD / د.ج).
+  - Bespoke scalable SVG Fassi7 Logo preserving original visual identity.
+
+
+2. PUBLIC WEBSITE PAGES & FEATURES
+--------------------------------------------------------------------------------
+A. STICKY NAVIGATION BAR (src/components/Navbar.tsx)
+   - Glassmorphic header with backdrop blur.
+   - Fassi7 vector brand logo with tagline "Learning That Fits Your Life".
+   - Links: Home, Courses (with highlighted "Flagship" tag), Languages, Teachers, About, Contact.
+   - 3-Language interactive selector with country flags (Arabic, English, French).
+   - Quick Demo Account switcher to test Super Admin and Secretary in 1 click.
+   - "Register Now" primary CTA button opening the universal enrollment modal.
+
+B. HOMEPAGE (src/app/page.tsx)
+   1. Hero Banner: Value proposition, animated trust badges, key statistics (5,000+ alumni, 98% pass rate, 7 global languages, 100% certified teachers), and dual CTAs ("Explore Programs" & "Take Level Assessment").
+   2. Languages Taught Showcase: Interactive grid for English, French, German, Spanish, Turkish, Italian, and Mandarin Chinese with real-time course counters and localized descriptions in all 3 languages.
+   3. Featured Programs Showcase: High-demand courses with "Most Popular" badges, CEFR level tags, live remaining seat counter, duration, hours, pricing in DZD, and assigned instructor.
+   4. CEFR Methodology & Level Estimator: Visual roadmap guiding students from total beginner (A1) to full professional fluency (C2).
+   5. Algerian Payment Solutions Section: Official support and guides for BaridiMob, CCP (Algérie Poste), CIB / Edahabia cards, and bank transfer.
+   6. Faculty Spotlight & Student Reviews: Testimonials from alumni preparing for IELTS, TCF Canada, and Goethe-Zertifikat.
+   7. FAQ Accordion & WhatsApp Integration: Answers to common student inquiries plus a direct 1-click WhatsApp chat link.
+
+C. COURSE CATALOG (src/app/courses/page.tsx)
+   - Real-time search matching keywords across Arabic, French, and English titles and descriptions.
+   - Multi-parameter filter engine:
+     * Filter by Language (English, French, German, Spanish, Turkish, etc.)
+     * Filter by Level (A1 Beginner, A2 Elementary, B1 Intermediate, B2 Upper Intermediate, C1-C2 Advanced, IELTS, TCF)
+     * Filter by Format (Live Online Cohort, 1-on-1 Private Tutoring, Intensive Bootcamp, Weekend Sessions)
+   - Interactive course cards with live seat counters, instructor avatar, duration, and direct enrollment trigger.
+
+D. LANGUAGES DIRECTORY (src/app/languages/page.tsx)
+   - Comprehensive overview of all 7 taught languages.
+   - Details targeted international examinations (IELTS, TOEFL, TCF Canada, DELF/DALF, Goethe-Zertifikat, DELE, TOMER, HSK).
+   - Direct filter links to open all available classes for that language.
+
+E. FACULTY & INSTRUCTORS (src/app/teachers/page.tsx)
+   - Certified instructor profiles with qualifications, biographies, specialties, spoken languages, and active courses taught.
+
+F. ABOUT THE ACADEMY (src/app/about/page.tsx)
+   - The evolution from Multilinguo to Fassi7, pedagogy, mission statement, and Algerian quality standards.
+
+G. CONTACT & PLACEMENT (src/app/contact/page.tsx)
+   - Student inquiry submission form saving directly to the database "contact_inquiries" table.
+   - Academy contact information, physical location, operating hours, and direct WhatsApp channel.
+
+H. UNIVERSAL FOOTER (src/components/Footer.tsx)
+   - Quick navigation links, language program shortcuts, payment security badges, contact coordinates, and legal rights.
+
+
+3. INTERACTIVE MODALS & UTILITIES
+--------------------------------------------------------------------------------
+* UNIVERSAL ENROLLMENT MODAL (src/components/EnrollmentModal.tsx):
+  - 1-step student application modal.
+  - Automatically loads selected course or lets student choose from a dropdown.
+  - Collects Full Name, Email, WhatsApp Phone, Preferred Schedule Slot, and Notes.
+  - Inserts application directly as a "new" enrollment in SQLite database.
+
+* OFFICIAL PAYMENT RECEIPT MODAL (src/components/ReceiptModal.tsx):
+  - Generates authentic Algerian payment receipts ("Reçu de Paiement").
+  - Produces unique receipt serial numbers (REC-2026-XXXX).
+  - Displays student details, course title, tuition amount, payment method (BaridiMob RIP / CCP), transaction reference number, date, and official Fassi7 stamp.
+  - Built-in "Print Receipt" functionality for instant printing or PDF saving.
+
+
+4. AUTHENTICATION & ROLE-BASED ACCESS CONTROL (RBAC)
+--------------------------------------------------------------------------------
+* Login Page: src/app/auth/login/page.tsx
+* Security: Passwords encrypted with bcrypt; sessions secured with signed HTTP-only cookies.
+* User Hierarchy (Simplified Two-Tier Staff Model):
+  1. SUPER ADMIN (Owner):
+     - Account: admin@fassi7.com / admin123
+     - Full operational and financial visibility.
+     - Exclusive ability to create and manage Secretary/Admin accounts.
+  2. ACADEMY ADMIN (Secretary / Assistant):
+     - Account: nadia@fadia@fassi7.com / admin123
+     - Day-to-day operations: student applications, payment verification, receipt generation, attendance, and lead inquiries.
+  * Note: Instructors and students are cataloged as directory records without login credentials, allowing staff to centrally manage all academy operations.
+
+
+5. ADMINISTRATIVE DASHBOARD (/dashboard)
+--------------------------------------------------------------------------------
+1. EXECUTIVE OVERVIEW (/dashboard):
+   - Real-time business KPIs: Total Revenue (DZD), Active Enrollments, Course Capacity Occupancy, Pending Payments.
+   - Recent student applications table with 1-click status actions (Accept, Review, Cancel).
+   - Recent payment transaction log with receipt links.
+
+2. COURSES MANAGEMENT (/dashboard/courses):
+   - Full CRUD: Add, edit, archive, and publish courses.
+   - Trilingual content fields: Arabic, French, and English titles, descriptions, prerequisites, and schedules.
+   - 1-Click "Duplicate Course" feature for rapid cohort scheduling.
+   - Instructor assignment to courses.
+
+3. ENROLLMENTS PIPELINE (/dashboard/enrollments):
+   - Full application pipeline: new -> under_review -> accepted -> awaiting_payment -> confirmed.
+   - Payment status tracking (pending, partially_paid, paid).
+   - 1-click "Issue Official Receipt" button.
+
+4. PAYMENTS & BILLING (/dashboard/payments):
+   - Records transactions for BaridiMob, CCP, cash, and bank transfers.
+   - Stores payment reference numbers and internal billing notes.
+   - Generates and prints official bilingual receipts.
+
+5. STUDENTS DIRECTORY (/dashboard/students):
+   - Student roster with contact coordinates, enrolled courses, total fees paid, and administrative notes.
+
+6. STAFF MANAGEMENT (/dashboard/staff) [Super Admin Only]:
+   - Allows the Super Admin (Owner) to create and manage Secretary/Admin accounts.
+   - Set staff name, email, password, phone, and toggle active/suspended status.
+
+7. FACULTY MANAGEMENT (/dashboard/teachers):
+   - Instructor directory with bios, specialties, qualifications, hourly rates, and assigned classes.
+
+8. SCHEDULE & ATTENDANCE (/dashboard/schedule):
+   - Timetable of upcoming live class sessions with Google Meet links.
+   - Interactive student attendance register (Present, Absent, Late).
+
+9. INQUIRIES & LEADS (/dashboard/inquiries):
+   - Inbox of prospective student inquiries submitted through the contact page.
+   - Status workflow: new -> contacted -> enrolled -> closed.
+
+10. REPORTS & ANALYTICS (/dashboard/reports):
+    - Exportable business performance, revenue breakdown by language, and cohort fill rates.
+
+11. ACADEMY SETTINGS (/dashboard/settings):
+    - Academy contact profile, official CCP account, BaridiMob RIP coordinates, and tuition policies.
+
+
+6. DATABASE & SYSTEM ARCHITECTURE
+--------------------------------------------------------------------------------
+* Framework: Next.js 16 (Turbopack, App Router) + React 19 + TypeScript.
+* Database: SQLite via better-sqlite3 (fassi7.db) with 13 relational tables:
+  1.  users               (Staff accounts & directory records with role-based access)
+  2.  teaching_languages  (Languages catalog with Arabic, French, and English descriptions)
+  3.  courses             (Curriculum, CEFR levels, format, tuition, duration, and trilingual content)
+  4.  course_teachers     (Many-to-many course to teacher assignments)
+  5.  teacher_profiles    (Teacher bios, qualifications, specialties, and hourly rates)
+  6.  student_profiles    (Student personal information, city, and learning objectives)
+  7.  enrollments         (Student course registrations, pipeline status, and tuition balances)
+  8.  class_sessions      (Calendar schedule of class sessions and virtual room links)
+  9.  attendance          (Session-level attendance records)
+  10. payment_receipts    (Official receipts, payment methods, transaction references)
+  11. contact_inquiries   (Website contact form leads and placement inquiries)
+  12. notifications       (Internal activity feed)
+  13. audit_logs          (Security audit trail recording administrative actions)
+
+* RESTful API Endpoints:
+  - /api/auth/*          (Login, logout, session check, quick-switch demo)
+  - /api/courses/*       (Course CRUD, search, and duplication)
+  - /api/languages       (Language CRUD and catalog)
+  - /api/enrollments     (Enrollment applications and status transitions)
+  - /api/payments/*      (Payment logging and receipt generation)
+  - /api/staff/*         (Secretary account creation and management)
+  - /api/students        (Student directory records)
+  - /api/teachers        (Faculty directory records)
+  - /api/schedule/*      (Calendar sessions and attendance sheet logging)
+  - /api/inquiries       (Contact inquiries pipeline)
+  - /api/reports         (Aggregated analytics)
+
+
+7. PRODUCTION READINESS & VERIFICATION
+--------------------------------------------------------------------------------
+* Zero external Tailwind dependencies (pure scoped Vanilla CSS tokens).
+* Verified Next.js production build: 0 errors across all 42 application routes.
+* Fully localized in Arabic, French, and English with dynamic direction (RTL/LTR).
+================================================================================
