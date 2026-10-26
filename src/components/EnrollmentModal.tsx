@@ -15,7 +15,8 @@ interface EnrollmentModalProps {
     title_en?: string;
     price: number;
     duration_weeks: number;
-    hours_total: number;
+    format?: string;
+    language_id?: number;
     language_name_fr?: string;
     language_name_ar?: string;
     language_name_en?: string;
@@ -28,6 +29,8 @@ const EMPTY_COURSES: any[] = [];
 export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_COURSES }: EnrollmentModalProps) {
   const { t, locale } = useLanguage();
   const [fetchedCourses, setFetchedCourses] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
+  const [selectedTeacher, setSelectedTeacher] = useState<string>('any');
   const [selectedCourseId, setSelectedCourseId] = useState<number>(course ? course.id : (coursesList[0]?.id || 1));
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -40,6 +43,16 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
 
   useEffect(() => {
     if (!isOpen) return;
+
+    // Fetch teachers list for individual selection
+    fetch('/api/teachers')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.teachers && Array.isArray(data.teachers)) {
+          setTeachers(data.teachers);
+        }
+      })
+      .catch(() => {});
 
     if (course) {
       setSelectedCourseId(course.id);
@@ -69,6 +82,13 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
 
   const allCourses = coursesList.length > 0 ? coursesList : fetchedCourses;
   const currentCourse = course || allCourses.find((c) => c.id === Number(selectedCourseId)) || allCourses[0];
+  const isIndividualTeaching = Boolean(
+    currentCourse?.format === 'private_1on1' ||
+    currentCourse?.title_fr?.toLowerCase()?.includes('individuel') ||
+    currentCourse?.title_en?.toLowerCase()?.includes('individual') ||
+    currentCourse?.title_en?.toLowerCase()?.includes('1-on-1') ||
+    currentCourse?.title_ar?.includes('فردي')
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,6 +96,11 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
     setError('');
 
     try {
+      const finalNotes =
+        isIndividualTeaching && selectedTeacher !== 'any'
+          ? `[Preferred Instructor: ${selectedTeacher}] ${notes}`.trim()
+          : notes;
+
       const res = await fetch('/api/enrollments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -85,7 +110,7 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
           phone,
           course_id: currentCourse ? currentCourse.id : selectedCourseId,
           preferred_schedule: preferredSchedule,
-          notes,
+          notes: finalNotes,
         }),
       });
 
@@ -277,6 +302,67 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
                   />
                 </div>
               </div>
+
+              {/* Individual Teaching: Instructor Selection */}
+              {isIndividualTeaching && (
+                <div
+                  className="form-group"
+                  style={{
+                    backgroundColor: 'rgba(250, 73, 31, 0.05)',
+                    border: '1.5px solid rgba(250, 73, 31, 0.28)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '1.1rem',
+                    marginBottom: '1.25rem',
+                  }}
+                >
+                  <label
+                    className="form-label"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
+                      color: 'var(--primary)',
+                      fontWeight: 800,
+                      marginBottom: '0.5rem',
+                    }}
+                  >
+                    <span>👨‍🏫</span>
+                    <span>
+                      {locale === 'ar'
+                        ? 'اختر أستاذك المفضل (تعليم فردي 1-on-1)'
+                        : locale === 'en'
+                        ? 'Choose Your Preferred Instructor (Individual Teaching)'
+                        : 'Choisissez votre formateur individuel'}
+                    </span>
+                  </label>
+                  <select
+                    value={selectedTeacher}
+                    onChange={(e) => setSelectedTeacher(e.target.value)}
+                    className="form-select"
+                    style={{ backgroundColor: '#FFFFFF', fontWeight: 600 }}
+                  >
+                    <option value="any">
+                      {locale === 'ar'
+                        ? '✨ أي مدرب خبير متاح (توصية الأكاديمية)'
+                        : locale === 'en'
+                        ? '✨ Any Available Expert Instructor (Academy Match)'
+                        : '✨ Tout formateur expert disponible'}
+                    </option>
+                    {teachers.map((t) => (
+                      <option key={t.id} value={t.name}>
+                        {t.name} {t.specialties_fr ? `— ${t.specialties_fr}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                  <p style={{ margin: '0.45rem 0 0 0', fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                    {locale === 'ar'
+                      ? 'يمكنك تحديد مدربك المفضل لجلساتك الخاصة، أو ترشيح الأكاديمية للمدرب الأنسب لجدولك.'
+                      : locale === 'en'
+                      ? 'Select your preferred personal mentor for 1-on-1 coaching, or let us match the best instructor for your schedule.'
+                      : 'Choisissez votre mentor particulier ou laissez l\'académie sélectionner le profil idéal.'}
+                  </p>
+                </div>
+              )}
 
               {/* Schedule Preference */}
               <div className="form-group">

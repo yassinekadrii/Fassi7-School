@@ -22,7 +22,6 @@ import {
   Play,
   ShieldCheck,
   Star,
-  Headphones,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -645,46 +644,6 @@ export default function HomePage() {
               </p>
               <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--dark-brown)', backgroundColor: '#F6F3EE', padding: '4px 12px', borderRadius: '999px' }}>
                 {locale === 'ar' ? 'تفاعل حي ومحادثة' : 'Live Group Interaction'}
-              </span>
-            </div>
-
-            {/* 4. AI Speaking lessons */}
-            <div
-              className="card"
-              style={{
-                textAlign: 'center',
-                padding: '2.25rem 1.75rem',
-                border: '2px solid rgba(250, 73, 31, 0.35)',
-                backgroundColor: '#FFFDFB',
-                boxShadow: '0 8px 24px rgba(250, 73, 31, 0.08)',
-                transition: 'all 0.3s ease',
-              }}
-            >
-              <div
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: 'var(--radius-lg)',
-                  backgroundColor: '#FFF0EB',
-                  color: '#FA491F',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 1.5rem auto',
-                }}
-              >
-                <Headphones size={28} />
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--dark-brown)' }}>
-                {locale === 'ar' ? 'محادثة بالذكاء الاصطناعي (AI Speaking)' : 'AI Speaking Practice'}
-              </h3>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '1.25rem' }}>
-                {locale === 'ar'
-                  ? 'تدرب على التحدث والنطق الصحيح دون حرج أو قيود في أي وقت مع مدرب الذكاء الاصطناعي الذكي.'
-                  : 'Practice conversational fluency and pronunciation 24/7 without hesitation alongside smart AI.'}
-              </p>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFFFFF', backgroundColor: '#FA491F', padding: '4px 12px', borderRadius: '999px' }}>
-                {locale === 'ar' ? 'متاح 24/7 وبلا تردد' : '24/7 Smart Companion'}
               </span>
             </div>
           </div>

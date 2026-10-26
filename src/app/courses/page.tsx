@@ -168,19 +168,66 @@ export default function CoursesPage() {
                 >
                   <option value="all">{t('filter_all_formats')}</option>
                   <option value="group_online">
-                    {locale === 'ar' ? 'فوج عبر الإنترنت (مباشر)' : locale === 'en' ? 'Live Online Cohort' : 'Groupe en ligne direct'}
+                    {locale === 'ar' ? 'أفواج عبر الإنترنت (Online Group)' : locale === 'en' ? 'Online Group' : 'Groupe en ligne'}
                   </option>
                   <option value="private_1on1">
-                    {locale === 'ar' ? 'تدريب فردي خاص (1-on-1)' : locale === 'en' ? '1-on-1 Private Tutoring' : 'Coaching individuel'}
+                    {locale === 'ar' ? 'تعليم فردي (Individual Teaching)' : locale === 'en' ? 'Individual Teaching' : 'Enseignement individuel'}
                   </option>
                   <option value="intensive">
-                    {locale === 'ar' ? 'برنامج مكثف' : locale === 'en' ? 'Intensive Bootcamp' : 'Programme intensif'}
+                    {locale === 'ar' ? 'برنامج مكثف (Intensive Bootcamp)' : locale === 'en' ? 'Intensive Bootcamp' : 'Bootcamp intensif'}
                   </option>
                   <option value="weekend">
-                    {locale === 'ar' ? 'حصص نهاية الأسبوع' : locale === 'en' ? 'Weekend Sessions' : 'Cours de week-end'}
+                    {locale === 'ar' ? 'حصص نهاية الأسبوع (Weekend Sessions)' : locale === 'en' ? 'Weekend Sessions' : 'Sessions week-end'}
                   </option>
                 </select>
               </div>
+            </div>
+
+            {/* Quick Format Pills Under Search Bar */}
+            <div
+              style={{
+                marginTop: '1.25rem',
+                paddingTop: '1rem',
+                borderTop: '1px solid var(--border)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                flexWrap: 'wrap',
+              }}
+            >
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                {locale === 'ar' ? 'الصيغة التعليمية:' : locale === 'en' ? 'Study Format:' : 'Format:'}
+              </span>
+              {[
+                { id: 'all', labelEn: 'All Formats', labelAr: 'جميع الصيغ', labelFr: 'Tous formats' },
+                { id: 'group_online', labelEn: 'Online Group', labelAr: 'أفواج أونلاين', labelFr: 'Groupe en ligne' },
+                { id: 'private_1on1', labelEn: 'Individual Teaching', labelAr: 'تعليم فردي خاص', labelFr: 'Individuel' },
+                { id: 'intensive', labelEn: 'Intensive Bootcamp', labelAr: 'مكثف (Bootcamp)', labelFr: 'Bootcamp intensif' },
+                { id: 'weekend', labelEn: 'Weekend Sessions', labelAr: 'نهاية الأسبوع', labelFr: 'Sessions week-end' },
+              ].map((fmt) => {
+                const active = selectedFormat === fmt.id;
+                return (
+                  <button
+                    key={fmt.id}
+                    type="button"
+                    onClick={() => setSelectedFormat(fmt.id)}
+                    style={{
+                      border: active ? '1.5px solid var(--primary)' : '1px solid var(--border)',
+                      backgroundColor: active ? 'var(--primary)' : '#FFFFFF',
+                      color: active ? '#FFFFFF' : 'var(--dark-brown)',
+                      fontWeight: active ? 700 : 500,
+                      fontSize: '0.82rem',
+                      padding: '0.35rem 0.85rem',
+                      borderRadius: 'var(--radius-full)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: active ? '0 2px 8px rgba(250, 73, 31, 0.25)' : 'none',
+                    }}
+                  >
+                    {locale === 'ar' ? fmt.labelAr : locale === 'en' ? fmt.labelEn : fmt.labelFr}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

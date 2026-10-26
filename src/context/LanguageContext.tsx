@@ -11,14 +11,14 @@ interface LanguageContextType {
 }
 
 const LanguageContext = createContext<LanguageContextType>({
-  locale: 'ar',
+  locale: 'en',
   setLocale: () => {},
-  dir: 'rtl',
+  dir: 'ltr',
   t: (key: string) => key,
 });
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('ar');
+  const [locale, setLocaleState] = useState<Locale>('en');
 
   useEffect(() => {
     // Check saved preference in localStorage
@@ -28,8 +28,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.lang = saved;
       document.documentElement.dir = saved === 'ar' ? 'rtl' : 'ltr';
     } else {
-      document.documentElement.lang = 'ar';
-      document.documentElement.dir = 'rtl';
+      setLocaleState('en');
+      document.documentElement.lang = 'en';
+      document.documentElement.dir = 'ltr';
     }
   }, []);
 

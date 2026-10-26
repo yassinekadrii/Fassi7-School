@@ -146,35 +146,33 @@ export function CourseCard({ course, onEnroll }: CourseCardProps) {
           </div>
         </div>
 
-        {/* Assigned Teacher if available */}
-        {course.teachers && course.teachers.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '1.5rem' }}>
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: 'var(--radius-full)',
-                backgroundColor: 'var(--primary-light)',
-                color: 'var(--primary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                fontSize: '0.8rem',
-              }}
-            >
-              {course.teachers[0].name.slice(0, 2).toUpperCase()}
-            </div>
-            <div>
-              <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                {locale === 'ar' ? 'المدرب المشرف:' : locale === 'en' ? 'Instructor:' : 'Formateur assigné:'}
-              </p>
-              <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 700, color: 'var(--dark-brown)' }}>
-                {course.teachers[0].name}
-              </p>
-            </div>
+        {/* Individual Teaching Instructor Selection Badge */}
+        {course.format === 'private_1on1' ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.6rem 0.85rem',
+              backgroundColor: 'rgba(250, 73, 31, 0.08)',
+              border: '1px solid rgba(250, 73, 31, 0.25)',
+              borderRadius: 'var(--radius-md)',
+              marginBottom: '1.25rem',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              color: 'var(--primary)',
+            }}
+          >
+            <span>🎯</span>
+            <span>
+              {locale === 'ar'
+                ? 'تعليم فردي • يمكنك اختيار أستاذك المفضل عند التسجيل'
+                : locale === 'en'
+                ? 'Individual Teaching • Select your preferred instructor upon enrollment'
+                : 'Cours individuel • Choisissez votre formateur à l\'inscription'}
+            </span>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Footer: Price & Enroll CTA */}
