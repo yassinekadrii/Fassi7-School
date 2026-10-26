@@ -111,12 +111,17 @@ Designed and engineered by **Kadri Yassine • Protium Agency**.
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.  
    *(The database `fassi7.db` initializes and seeds automatically on first run).*
 
-### Production Build
+### Production Build & cPanel Deployment
 
 ```bash
+# Production build
 npm run build
+
+# Start using the unified cPanel server
 npm start
 ```
+
+> 📖 **cPanel Deployment Guide**: See [CPANEL_DEPLOYMENT_GUIDE.md](file:///e:/Fassi7_School/CPANEL_DEPLOYMENT_GUIDE.md) for full step-by-step instructions on setting up the app using cPanel's **Setup Node.js App** (CloudLinux / Phusion Passenger) with `server.js`.
 
 ---
 
