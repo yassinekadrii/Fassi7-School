@@ -1,15 +1,42 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 import bcrypt from 'bcryptjs';
-
-const DB_PATH = path.join(process.cwd(), 'fassi7.db');
 
 let dbInstance: Database.Database | null = null;
 
+function getDatabasePath(): string {
+  // Check if running on Vercel or AWS Lambda serverless read-only environment
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const tmpDbPath = path.join('/tmp', 'fassi7.db');
+    if (!fs.existsSync(tmpDbPath)) {
+      const bundledPath = path.join(process.cwd(), 'fassi7.db');
+      if (fs.existsSync(bundledPath)) {
+        try {
+          fs.copyFileSync(bundledPath, tmpDbPath);
+          console.log(`Copied bundled database to ${tmpDbPath}`);
+        } catch (err) {
+          console.warn('Could not copy bundled database:', err);
+        }
+      }
+    }
+    return tmpDbPath;
+  }
+
+  return path.join(process.cwd(), 'fassi7.db');
+}
+
 export function getDb(): Database.Database {
   if (!dbInstance) {
-    dbInstance = new Database(DB_PATH);
-    dbInstance.pragma('journal_mode = WAL');
+    const dbPath = getDatabasePath();
+    dbInstance = new Database(dbPath);
+    try {
+      dbInstance.pragma('journal_mode = WAL');
+    } catch (_) {
+      try {
+        dbInstance.pragma('journal_mode = DELETE');
+      } catch (__) {}
+    }
     dbInstance.pragma('foreign_keys = ON');
     initDatabase(dbInstance);
   }
