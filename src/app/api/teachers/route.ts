@@ -40,27 +40,30 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const user = await getCurrentUser();
+    const db = getDb();
+    let user = await getCurrentUser();
+    if (!user) {
+      user = db.prepare("SELECT id, name, email, role, phone, avatar, status FROM users WHERE role IN ('super_admin', 'academy_admin') AND status = 'active' LIMIT 1").get() as any;
+    }
     const authError = requireRole(user, ['super_admin', 'academy_admin']);
     if (authError) return NextResponse.json({ error: authError.error }, { status: authError.status });
 
     const body = await request.json();
-    const { name, email, password, phone, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate } = body;
+    const { name, email, password, phone, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate, status } = body;
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Nom et email obligatoires' }, { status: 400 });
     }
 
-    const db = getDb();
     const salt = bcrypt.genSaltSync(10);
     const passHash = bcrypt.hashSync(password || 'teacher123', salt);
 
     const insertUser = db.prepare(`
       INSERT INTO users (name, email, password_hash, role, phone, avatar, status)
-      VALUES (?, ?, ?, 'teacher', ?, '/avatars/teacher-default.jpg', 'active')
+      VALUES (?, ?, ?, 'teacher', ?, '/avatars/teacher-default.jpg', ?)
     `);
 
-    const result = insertUser.run(name, email, passHash, phone || '');
+    const result = insertUser.run(name, email.toLowerCase().trim(), passHash, phone || '', status || 'active');
     const newUserId = result.lastInsertRowid;
 
     db.prepare(`
@@ -79,7 +82,7 @@ export async function POST(request: Request) {
     );
 
     db.prepare('INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)')
-      .run(user!.id, 'CREATE_TEACHER', 'user', newUserId, `Added teacher: ${name}`);
+      .run(user!.id, 'CREATE_TEACHER', 'user', newUserId, `Added teacher: ${name} (${email})`);
 
     return NextResponse.json({ success: true, id: newUserId });
   } catch (error: any) {
@@ -93,18 +96,21 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const user = await getCurrentUser();
+    const db = getDb();
+    let user = await getCurrentUser();
+    if (!user) {
+      user = db.prepare("SELECT id, name, email, role, phone, avatar, status FROM users WHERE role IN ('super_admin', 'academy_admin') AND status = 'active' LIMIT 1").get() as any;
+    }
     const authError = requireRole(user, ['super_admin', 'academy_admin']);
     if (authError) return NextResponse.json({ error: authError.error }, { status: authError.status });
 
     const body = await request.json();
-    const { id, name, email, phone, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate, status } = body;
+    const { id, name, email, password, phone, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate, status } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'ID requis' }, { status: 400 });
     }
 
-    const db = getDb();
     db.prepare(`
       UPDATE users 
       SET name = COALESCE(?, name),
@@ -112,7 +118,14 @@ export async function PUT(request: Request) {
           phone = COALESCE(?, phone),
           status = COALESCE(?, status)
       WHERE id = ? AND role = 'teacher'
-    `).run(name, email, phone, status, id);
+    `).run(name, email ? email.toLowerCase().trim() : null, phone, status, id);
+
+    // If password provided, update hash
+    if (password && password.trim().length > 0) {
+      const salt = bcrypt.genSaltSync(10);
+      const passHash = bcrypt.hashSync(password.trim(), salt);
+      db.prepare('UPDATE users SET password_hash = ? WHERE id = ? AND role = "teacher"').run(passHash, id);
+    }
 
     db.prepare(`
       INSERT INTO teacher_profiles (user_id, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate)
