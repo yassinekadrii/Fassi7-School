@@ -85,11 +85,15 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser();
-    const authError = requireRole(user, ['super_admin', 'academy_admin']);
+    const authError = requireRole(user, ['super_admin', 'academy_admin', 'teacher']);
     if (authError) return NextResponse.json({ error: authError.error }, { status: authError.status });
 
     const body = await request.json();
-    const { course_id, teacher_id, title_ar, title_fr, session_type, start_time, end_time, meeting_url, room_name, summary_notes } = body;
+    let { course_id, teacher_id, title_ar, title_fr, session_type, start_time, end_time, meeting_url, room_name, summary_notes, status } = body;
+
+    if (user?.role === 'teacher') {
+      teacher_id = user.id;
+    }
 
     if (!course_id || !teacher_id || !start_time || !end_time) {
       return NextResponse.json({ error: 'Cours, enseignant, heure de début et fin requis' }, { status: 400 });
