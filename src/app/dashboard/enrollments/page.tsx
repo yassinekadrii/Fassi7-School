@@ -167,8 +167,8 @@ export default function EnrollmentsManagePage() {
           </h1>
           <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             {locale === 'ar'
-              ? 'متابعة مسار التسجيل: من الطلب الأولي حتى تسديد BaridiMob/CCP، التفعيل، وإضافة المجموعات'
-              : 'Workflow inscriptions: réception, paiement CCP/BaridiMob, validation & intégration WhatsApp / Telegram'}
+              ? 'متابعة مسار التسجيل: من الطلب الأولي حتى القبول والتأكيد النهائي'
+              : 'Gestion des candidatures, examen des dossiers et validation'}
           </p>
         </div>
 
@@ -206,47 +206,6 @@ export default function EnrollmentsManagePage() {
         </div>
       )}
 
-      {/* Workflow Guidance Card */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(250,70,29,0.06) 0%, rgba(255,173,24,0.08) 100%)',
-        border: '1px solid rgba(250,70,29,0.2)',
-        borderRadius: '14px',
-        padding: '1.25rem',
-        marginBottom: '1.5rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-          <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <ShieldCheck size={24} />
-          </div>
-          <div>
-            <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 800, color: 'var(--dark-brown)' }}>
-              {locale === 'ar' ? 'دورة التسجيل المتكاملة في الأكاديمية' : 'Procédure d\'admission & intégration'}
-            </h4>
-            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-              {locale === 'ar'
-                ? '1. استلام الطلب ➔ 2. مراجعة إشعار Instagram / WhatsApp ➔ 3. تأكيد تسديد BaridiMob أو CCP ➔ 4. تفعيل الحساب وإرسال رابط مجموعة WhatsApp أو Telegram'
-                : '1. Inscription reçue ➔ 2. Contact Instagram/WhatsApp ➔ 3. Confirmation CCP/BaridiMob ➔ 4. Activation du compte & invitation WhatsApp / Telegram'}
-            </p>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <a
-            href="https://instagram.com/fassi7.school"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-outline btn-sm"
-            style={{ fontSize: '0.78rem', background: '#fff', color: '#E1306C', borderColor: '#E1306C', textDecoration: 'none' }}
-          >
-            📸 Instagram DM
-          </a>
-        </div>
-      </div>
-
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-wrapper">
           <table className="table">
@@ -257,8 +216,7 @@ export default function EnrollmentsManagePage() {
                 <th>{locale === 'ar' ? 'تاريخ الطلب' : 'Date d\'envoi'}</th>
                 <th>{locale === 'ar' ? 'حالة الطلب' : 'Statut Dossier'}</th>
                 <th>{locale === 'ar' ? 'حالة الدفع' : 'Paiement'}</th>
-                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'المجموعات والتفعيل' : 'Groupes & Activation'}</th>
-                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'إجراء' : 'Action'}</th>
+                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'معالجة' : 'Action'}</th>
               </tr>
             </thead>
             <tbody>
@@ -303,73 +261,6 @@ export default function EnrollmentsManagePage() {
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.2rem' }}>
                       {enr.amount_paid?.toLocaleString()} / {enr.amount_due?.toLocaleString()} {t('price_dzd')}
                     </span>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <div style={{ display: 'inline-flex', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                      {/* WhatsApp Group Invite */}
-                      <a
-                        href={getWhatsAppInviteUrl(enr)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-outline btn-sm"
-                        style={{
-                          padding: '0.3rem 0.6rem',
-                          fontSize: '0.75rem',
-                          gap: '0.25rem',
-                          background: '#E8F5E9',
-                          borderColor: '#25D366',
-                          color: '#1E7E34',
-                          textDecoration: 'none',
-                          fontWeight: 700
-                        }}
-                        title={locale === 'ar' ? 'إرسال رابط مجموعة الواتساب' : 'Envoyer lien groupe WhatsApp'}
-                      >
-                        <MessageCircle size={13} color="#25D366" />
-                        <span>WhatsApp</span>
-                      </a>
-
-                      {/* Telegram Group Invite */}
-                      <a
-                        href={getTelegramInviteUrl(enr)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-outline btn-sm"
-                        style={{
-                          padding: '0.3rem 0.6rem',
-                          fontSize: '0.75rem',
-                          gap: '0.25rem',
-                          background: '#E1F5FE',
-                          borderColor: '#0288D1',
-                          color: '#0277BD',
-                          textDecoration: 'none',
-                          fontWeight: 700
-                        }}
-                        title={locale === 'ar' ? 'إرسال رابط مجموعة تيليجرام' : 'Envoyer lien groupe Telegram'}
-                      >
-                        <Send size={13} color="#0288D1" />
-                        <span>Telegram</span>
-                      </a>
-
-                      {/* Quick 1-click activate button if not confirmed */}
-                      {enr.status !== 'confirmed' && (
-                        <button
-                          onClick={() => handleQuickActivate(enr)}
-                          className="btn-primary btn-sm"
-                          style={{
-                            padding: '0.3rem 0.6rem',
-                            fontSize: '0.75rem',
-                            gap: '0.25rem',
-                            background: '#0E9F6E',
-                            borderColor: '#0E9F6E',
-                            fontWeight: 700
-                          }}
-                          title={locale === 'ar' ? 'تأكيد دفع BaridiMob/CCP وتفعيل الحساب' : 'Valider paiement & Activer'}
-                        >
-                          <Check size={13} />
-                          <span>{locale === 'ar' ? 'تفعيل فوري' : 'Activer'}</span>
-                        </button>
-                      )}
-                    </div>
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     <button

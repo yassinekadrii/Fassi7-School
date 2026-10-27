@@ -173,8 +173,8 @@ export default function ScheduleManagePage() {
           </h1>
           <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             {locale === 'ar'
-              ? 'الجدول الزمني للحصص، كشف تضارب المواعيد، وروابط غرف الفيديو وتسجيل الحضور'
-              : 'Planning des séances, détection des conflits et gestion des présences'}
+              ? 'الجدول الزمني للحصص وكشف تضارب المواعيد'
+              : 'Planning des séances et détection des conflits'}
           </p>
         </div>
 
@@ -192,9 +192,7 @@ export default function ScheduleManagePage() {
                 <th>{locale === 'ar' ? 'الحصة والتاريخ' : 'Séance & Date'}</th>
                 <th>{locale === 'ar' ? 'الدورة واللغة' : 'Formation'}</th>
                 <th>{locale === 'ar' ? 'الأستاذ' : 'Formateur'}</th>
-                <th>{locale === 'ar' ? 'غرفة اللقاء' : 'Lien Direct'}</th>
                 <th>{locale === 'ar' ? 'الحالة' : 'Statut'}</th>
-                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'الحضور' : 'Présences'}</th>
               </tr>
             </thead>
             <tbody>
@@ -221,36 +219,9 @@ export default function ScheduleManagePage() {
                     <span style={{ fontWeight: 700, fontSize: '0.88rem' }}>{s.teacher_name}</span>
                   </td>
                   <td>
-                    {s.meeting_url ? (
-                      <a
-                        href={s.meeting_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn-outline btn-sm"
-                        style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', gap: '0.3rem', color: '#10B981' }}
-                      >
-                        <Video size={13} />
-                        <span>Google Meet</span>
-                        <ExternalLink size={11} />
-                      </a>
-                    ) : (
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>-</span>
-                    )}
-                  </td>
-                  <td>
                     <span className={s.status === 'completed' ? 'badge badge-success' : 'badge badge-secondary'}>
                       {s.status === 'completed' ? (locale === 'ar' ? 'مكتملة' : 'Terminée') : (locale === 'ar' ? 'مجدولة' : 'Planifiée')}
                     </span>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <button
-                      onClick={() => openAttendanceModal(s)}
-                      className="btn-outline btn-sm"
-                      style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem', gap: '0.3rem' }}
-                    >
-                      <UserCheck size={14} color="var(--primary)" />
-                      <span>{locale === 'ar' ? 'كشف الحضور' : 'Présences'}</span>
-                    </button>
                   </td>
                 </tr>
               ))}
