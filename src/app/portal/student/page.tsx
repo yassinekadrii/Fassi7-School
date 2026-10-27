@@ -35,11 +35,32 @@ export default function StudentPortalPage() {
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
 
   useEffect(() => {
+    async function loadStudentData() {
+      try {
+        const [schedRes, coursesRes] = await Promise.all([
+          fetch('/api/schedule'),
+          fetch('/api/courses'),
+        ]);
+        if (schedRes.ok) {
+          const d = await schedRes.json();
+          setSessions(d.sessions || []);
+        }
+        if (coursesRes.ok) {
+          const d = await coursesRes.json();
+          setEnrollments(d.courses ? d.courses.slice(0, 3) : []);
+        }
+      } catch (e) {
+        console.error('Failed loading student portal data', e);
+      } finally {
+        setLoadingData(false);
+      }
+    }
+
     if (!loading) {
-      if (user) {
-        router.push('/dashboard');
+      if (!user) {
+        router.push('/admin-portal');
       } else {
-        router.push('/auth/login');
+        loadStudentData();
       }
     }
   }, [user, loading, router]);

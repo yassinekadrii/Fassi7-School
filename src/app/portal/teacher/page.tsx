@@ -44,7 +44,9 @@ export default function TeacherPortalPage() {
     }
 
     if (!loading) {
-      if (user && user.role === 'student') {
+      if (!user) {
+        router.push('/admin-portal');
+      } else if (user.role === 'student') {
         router.push('/portal/student');
       } else {
         loadTeacherData();

@@ -307,9 +307,10 @@ function seedInitialData(db: Database.Database) {
 
   const salt = bcrypt.genSaltSync(10);
   const adminPasswordHash = bcrypt.hashSync('admin123', salt);
+  const teacherPasswordHash = bcrypt.hashSync('teacher123', salt);
   const disabledLoginHash = 'DISABLED_NO_LOGIN_ACCOUNT';
 
-  // 1. Insert Users - Only Super Admin (Owner) and Academy Admin (Secretary) have login accounts
+  // 1. Insert Users - Super Admin, Academy Admin (Secretary) and Teachers
   const insertUser = db.prepare(`
     INSERT INTO users (name, email, password_hash, role, phone, avatar, status)
     VALUES (?, ?, ?, ?, ?, ?, 'active')
@@ -318,11 +319,11 @@ function seedInitialData(db: Database.Database) {
   const superAdmin = insertUser.run('Fassi7 Director', 'admin@fassi7.com', adminPasswordHash, 'super_admin', '+213 550 12 34 56', '/avatars/admin.jpg');
   const academyAdmin = insertUser.run('Nadia Mansouri', 'nadia@fassi7.com', adminPasswordHash, 'academy_admin', '+213 551 22 33 44', '/avatars/nadia.jpg');
   
-  // Teachers (Instructors directory records, login disabled)
-  const teacher1 = insertUser.run('Dr. Youcef Belkacem', 'youcef@fassi7.com', disabledLoginHash, 'teacher', '+213 661 11 22 33', '/avatars/teacher1.jpg');
-  const teacher2 = insertUser.run('Sarah Benali', 'sarah@fassi7.com', disabledLoginHash, 'teacher', '+213 662 33 44 55', '/avatars/teacher2.jpg');
-  const teacher3 = insertUser.run('Marc Dupont', 'marc@fassi7.com', disabledLoginHash, 'teacher', '+213 663 55 66 77', '/avatars/teacher3.jpg');
-  const teacher4 = insertUser.run('Amina Khelifi', 'amina@fassi7.com', disabledLoginHash, 'teacher', '+213 664 77 88 99', '/avatars/teacher4.jpg');
+  // Teachers (Instructors directory records, login enabled with teacher123)
+  const teacher1 = insertUser.run('Dr. Youcef Belkacem', 'youcef@fassi7.com', teacherPasswordHash, 'teacher', '+213 661 11 22 33', '/avatars/teacher1.jpg');
+  const teacher2 = insertUser.run('Sarah Benali', 'sarah@fassi7.com', teacherPasswordHash, 'teacher', '+213 662 33 44 55', '/avatars/teacher2.jpg');
+  const teacher3 = insertUser.run('Marc Dupont', 'marc@fassi7.com', teacherPasswordHash, 'teacher', '+213 663 55 66 77', '/avatars/teacher3.jpg');
+  const teacher4 = insertUser.run('Amina Khelifi', 'amina@fassi7.com', teacherPasswordHash, 'teacher', '+213 664 77 88 99', '/avatars/teacher4.jpg');
 
   // Students (Learners directory records, login disabled)
   const student1 = insertUser.run('Karim Meziane', 'karim@gmail.com', disabledLoginHash, 'student', '+213 770 12 34 56', '/avatars/student1.jpg');
