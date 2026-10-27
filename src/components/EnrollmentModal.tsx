@@ -268,10 +268,10 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
                 </div>
                 <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
                   {locale === 'ar'
-                    ? 'بعد التحويل، أرسل صورة الوصل عبر إنستغرام أو واتساب ليقوم المشرف بتفعيل حسابك فوراً وإضافتك إلى مجموعة الفوج (WhatsApp / Telegram).'
+                    ? 'بعد التحويل، أرسل صورة الوصل عبر إنستغرام أو واتساب ليقوم المشرف بتأكيد تسجيلك فوراً.'
                     : locale === 'en'
-                    ? 'After transferring, send your receipt slip via Instagram DM or WhatsApp. Our team will activate your profile and add you directly to the cohort WhatsApp/Telegram group.'
-                    : 'Après paiement, envoyez le reçu par Instagram ou WhatsApp pour activer votre compte et rejoindre le groupe WhatsApp/Telegram de votre promotion.'}
+                    ? 'After transferring, please send your receipt slip via Instagram DM or WhatsApp for instant enrollment confirmation.'
+                    : 'Après paiement, veuillez envoyer votre reçu par Instagram ou WhatsApp pour valider votre inscription.'}
                 </p>
               </div>
 

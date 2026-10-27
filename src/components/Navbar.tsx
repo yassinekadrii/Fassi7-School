@@ -622,30 +622,7 @@ export function Navbar() {
                   </div>
                 )}
               </div>
-            ) : (
-              <Link
-                href="/admin-portal"
-                className="btn-outline btn-sm"
-                style={{
-                  borderRadius: 'var(--radius-full)',
-                  gap: '0.35rem',
-                  padding: '0.42rem 0.85rem',
-                  fontSize: '0.84rem',
-                  fontWeight: 700,
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                  border: '1.5px solid var(--border)',
-                  backgroundColor: '#FFFFFF',
-                  color: 'var(--dark-brown)',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                }}
-              >
-                <LogIn size={14} color="var(--primary)" />
-                <span>{locale === 'ar' ? 'تسجيل الدخول' : locale === 'en' ? 'Log In' : 'Connexion'}</span>
-              </Link>
-            )}
+            ) : null}
 
             {/* Standalone Conversion CTA: Register Now */}
             <button
@@ -878,29 +855,7 @@ export function Navbar() {
                 <span>WhatsApp (+213 550 12 34 56)</span>
               </a>
 
-              {!user && (
-                <Link
-                  href="/admin-portal"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="btn-outline"
-                  style={{
-                    width: '100%',
-                    justifyContent: 'center',
-                    padding: '0.8rem',
-                    gap: '0.5rem',
-                    textDecoration: 'none',
-                    fontWeight: 700,
-                    color: 'var(--dark-brown)',
-                    border: '1.5px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                  <LogIn size={16} color="var(--primary)" />
-                  <span>{locale === 'ar' ? 'تسجيل الدخول (إدارة وأساتذة)' : locale === 'en' ? 'Sign In (Teachers & Staff)' : 'Connexion (Enseignants & Équipe)'}</span>
-                </Link>
-              )}
+
 
               {user ? (
                 <button

@@ -143,20 +143,6 @@ export default function StudentPortalPage() {
                         <Clock size={16} />
                         <span>{s.start_time}</span>
                       </div>
-
-                      {s.meeting_url && (
-                        <a
-                          href={s.meeting_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="btn-primary btn-sm"
-                          style={{ width: '100%', justifyContent: 'center', gap: '0.4rem' }}
-                        >
-                          <Video size={16} />
-                          <span>{locale === 'ar' ? 'انضم إلى الحصة الحية' : locale === 'en' ? 'Join Live Google Meet' : 'Rejoindre la classe Google Meet'}</span>
-                          <ExternalLink size={13} />
-                        </a>
-                      )}
                     </div>
                   ))}
                 </div>

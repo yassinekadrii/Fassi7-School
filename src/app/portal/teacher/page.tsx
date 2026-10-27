@@ -175,23 +175,9 @@ export default function TeacherPortalPage() {
                       </div>
 
                       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                        {s.meeting_url && (
-                          <a
-                            href={s.meeting_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="btn-primary btn-sm"
-                            style={{ gap: '0.4rem' }}
-                          >
-                            <Video size={15} />
-                            <span>{locale === 'ar' ? 'دخول غرفة التدريس' : locale === 'en' ? 'Join Virtual Classroom' : 'Rejoindre la séance'}</span>
-                            <ExternalLink size={12} />
-                          </a>
-                        )}
-
                         <button
                           onClick={() => openAttendanceModal(s)}
-                          className="btn-outline btn-sm"
+                          className="btn-primary btn-sm"
                           style={{ gap: '0.4rem' }}
                         >
                           <UserCheck size={15} />

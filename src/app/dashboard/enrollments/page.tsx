@@ -299,41 +299,7 @@ export default function EnrollmentsManagePage() {
 
             <form onSubmit={handleUpdateStatus}>
               <div className="modal-body">
-                {/* Quick Community Group Actions */}
-                <div style={{ background: '#F8FAFC', padding: '0.85rem', borderRadius: '10px', marginBottom: '1.25rem', border: '1px solid #E2E8F0' }}>
-                  <label style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--dark-brown)', display: 'block', marginBottom: '0.5rem' }}>
-                    {locale === 'ar' ? 'روابط المجموعات المباشرة للطالب:' : 'Liens directs d\'intégration de l\'étudiant :'}
-                  </label>
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <a
-                      href={getWhatsAppInviteUrl(selectedEnrollment)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-outline btn-sm"
-                      style={{ background: '#25D366', color: '#fff', borderColor: '#25D366', textDecoration: 'none', fontSize: '0.8rem', gap: '0.35rem' }}
-                    >
-                      <MessageCircle size={14} /> WhatsApp Groupe
-                    </a>
-                    <a
-                      href={getTelegramInviteUrl(selectedEnrollment)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-outline btn-sm"
-                      style={{ background: '#0288D1', color: '#fff', borderColor: '#0288D1', textDecoration: 'none', fontSize: '0.8rem', gap: '0.35rem' }}
-                    >
-                      <Send size={14} /> Telegram Groupe
-                    </a>
-                    <a
-                      href="https://instagram.com/fassi7.school"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-outline btn-sm"
-                      style={{ background: '#E1306C', color: '#fff', borderColor: '#E1306C', textDecoration: 'none', fontSize: '0.8rem', gap: '0.35rem' }}
-                    >
-                      📸 Instagram DM
-                    </a>
-                  </div>
-                </div>
+
 
                 <div className="form-group">
                   <label className="form-label">{locale === 'ar' ? 'تغيير حالة الملف' : 'Statut d\'inscription'} *</label>
