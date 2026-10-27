@@ -17,10 +17,12 @@ export default function LanguagesManagePage() {
   const [code, setCode] = useState('');
   const [nameAr, setNameAr] = useState('');
   const [nameFr, setNameFr] = useState('');
+  const [nameEn, setNameEn] = useState('');
   const [slug, setSlug] = useState('');
   const [flagEmoji, setFlagEmoji] = useState('🌐');
   const [descAr, setDescAr] = useState('');
   const [descFr, setDescFr] = useState('');
+  const [descEn, setDescEn] = useState('');
   const [displayOrder, setDisplayOrder] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -46,10 +48,12 @@ export default function LanguagesManagePage() {
     setCode('');
     setNameAr('');
     setNameFr('');
+    setNameEn('');
     setSlug('');
     setFlagEmoji('🌐');
     setDescAr('');
     setDescFr('');
+    setDescEn('');
     setDisplayOrder(languages.length + 1);
     setError('');
     setIsModalOpen(true);
@@ -60,10 +64,12 @@ export default function LanguagesManagePage() {
     setCode(lang.code);
     setNameAr(lang.name_ar);
     setNameFr(lang.name_fr);
+    setNameEn(lang.name_en || lang.name_fr);
     setSlug(lang.slug);
     setFlagEmoji(lang.flag_emoji || '🌐');
     setDescAr(lang.description_ar || '');
     setDescFr(lang.description_fr || '');
+    setDescEn(lang.description_en || '');
     setDisplayOrder(lang.display_order || 0);
     setError('');
     setIsModalOpen(true);
@@ -79,11 +85,12 @@ export default function LanguagesManagePage() {
       code,
       name_ar: nameAr,
       name_fr: nameFr,
-      name_en: nameFr,
+      name_en: nameEn || nameFr,
       slug: slug || code.toLowerCase(),
       flag_emoji: flagEmoji,
       description_ar: descAr,
       description_fr: descFr,
+      description_en: descEn,
       display_order: Number(displayOrder),
     };
 
@@ -344,11 +351,23 @@ export default function LanguagesManagePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'الوصف بالعربية' : 'Description en Arabe'}</label>
+                  <label className="form-label">الوصف بالعربية</label>
                   <textarea
                     rows={2}
+                    placeholder="مناهج تدريبية معتمدة وفق الإطار الأوروبي المشترك للغات..."
                     value={descAr}
                     onChange={(e) => setDescAr(e.target.value)}
+                    className="form-textarea"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">{locale === 'ar' ? 'الوصف بالإنجليزية' : locale === 'en' ? 'English Description' : 'Description en Anglais'}</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Certified curriculum aligned with the Common European Framework of Reference (CEFR)..."
+                    value={descEn}
+                    onChange={(e) => setDescEn(e.target.value)}
                     className="form-textarea"
                   />
                 </div>
@@ -357,6 +376,7 @@ export default function LanguagesManagePage() {
                   <label className="form-label">{locale === 'ar' ? 'الوصف بالفرنسية' : 'Description en Français'}</label>
                   <textarea
                     rows={2}
+                    placeholder="Programmes linguistiques d'excellence alignés sur les standards internationaux..."
                     value={descFr}
                     onChange={(e) => setDescFr(e.target.value)}
                     className="form-textarea"

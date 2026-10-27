@@ -121,6 +121,43 @@ export default function StudentsManagePage() {
     document.body.removeChild(link);
   };
 
+  const handleSettleBalance = async (student: any) => {
+    const confirmMsg =
+      locale === 'ar'
+        ? `هل تريد تأكيد تسوية رصيد الطالب (${student.name}) بقيمة (${student.balance?.toLocaleString()} د.ج)؟`
+        : locale === 'en'
+        ? `Are you sure you want to mark the remaining balance of ${student.balance?.toLocaleString()} DZD for ${student.name} as Settled?`
+        : `Confirmer le règlement intégral du solde (${student.balance?.toLocaleString()} DZD) pour ${student.name} ?`;
+
+    if (!confirm(confirmMsg)) return;
+
+    try {
+      const activeEnrollment = student.enrollments?.[0];
+      const res = await fetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          student_id: student.id,
+          enrollment_id: activeEnrollment?.id || null,
+          course_id: activeEnrollment?.course_id || null,
+          amount: student.balance,
+          payment_method: 'baridimob',
+          reference_number: `REGLE-${Date.now().toString().slice(-6)}`,
+          status: 'paid',
+          notes: 'Solde entièrement réglé par l\'administration / Settled by Admin',
+        }),
+      });
+
+      if (res.ok) {
+        loadStudents();
+      } else {
+        alert(locale === 'ar' ? 'حدث خطأ أثناء تسوية الرصيد' : 'Erreur lors de la mise à jour du solde.');
+      }
+    } catch (err) {
+      console.error('Error settling balance:', err);
+    }
+  };
+
   const filteredStudents = students.filter((s) => {
     if (!search.trim()) return true;
     const q = search.toLowerCase();
@@ -233,12 +270,30 @@ export default function StudentsManagePage() {
                   </td>
                   <td>
                     {s.balance > 0 ? (
-                      <span className="badge badge-danger">
-                        {s.balance?.toLocaleString()} {t('price_dzd')}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                        <span className="badge badge-danger">
+                          {s.balance?.toLocaleString()} {t('price_dzd')}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleSettleBalance(s)}
+                          className="btn-outline btn-sm"
+                          style={{
+                            fontSize: '0.72rem',
+                            padding: '0.2rem 0.55rem',
+                            borderColor: '#10B981',
+                            color: '#10B981',
+                            fontWeight: 700,
+                            borderRadius: 'var(--radius-full)',
+                          }}
+                          title={locale === 'ar' ? 'تسوية الرصيد المستحق' : locale === 'en' ? 'Mark balance as Settled' : 'Régler le solde'}
+                        >
+                          ✓ {locale === 'ar' ? 'تسوية' : locale === 'en' ? 'Settle' : 'Régler'}
+                        </button>
+                      </div>
                     ) : (
-                      <span className="badge badge-success">
-                        {locale === 'ar' ? 'سدد بالكامل' : 'Réglé'}
+                      <span className="badge badge-success" style={{ fontWeight: 700 }}>
+                        ✓ {locale === 'ar' ? 'سدد بالكامل' : locale === 'en' ? 'Settled' : 'Réglé'}
                       </span>
                     )}
                   </td>

@@ -147,7 +147,7 @@ export default function DashboardOverviewPage() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-              {t('dash_kpi_students')}
+              {locale === 'ar' ? 'إجمالي الطلاب المسجلين' : locale === 'en' ? 'Total Enrolled Students' : 'Total Étudiants'}
             </span>
             <div style={{ width: '38px', height: '38px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Users size={20} />
@@ -157,7 +157,7 @@ export default function DashboardOverviewPage() {
             {kpis.total_students || 0}
           </div>
           <span style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.4rem' }}>
-            <TrendingUp size={13} /> {locale === 'ar' ? 'حسابات طلاب نشطة' : 'Comptes actifs'}
+            <TrendingUp size={13} /> {locale === 'ar' ? 'حسابات طلاب نشطة' : locale === 'en' ? 'Active student accounts' : 'Comptes actifs'}
           </span>
         </div>
 
@@ -165,7 +165,7 @@ export default function DashboardOverviewPage() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-              {t('dash_kpi_inquiries')}
+              {locale === 'ar' ? 'طلبات التسجيل الجديدة' : locale === 'en' ? 'New Registration Requests' : 'Nouvelles Inscriptions'}
             </span>
             <div style={{ width: '38px', height: '38px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--info-light)', color: 'var(--info)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <ClipboardList size={20} />
@@ -175,7 +175,7 @@ export default function DashboardOverviewPage() {
             {kpis.new_requests || 0}
           </div>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginTop: '0.4rem' }}>
-            {locale === 'ar' ? 'طلبات بانتظار المراجعة' : 'Dossiers à traiter'}
+            {locale === 'ar' ? 'طلبات بانتظار المراجعة' : locale === 'en' ? 'Applications awaiting review' : 'Dossiers à traiter'}
           </span>
         </div>
 
@@ -183,7 +183,7 @@ export default function DashboardOverviewPage() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-              {locale === 'ar' ? 'التسجيلات المؤكدة' : 'Inscriptions Confirmées'}
+              {locale === 'ar' ? 'التسجيلات المؤكدة' : locale === 'en' ? 'Confirmed Enrollments' : 'Inscriptions Confirmées'}
             </span>
             <div style={{ width: '38px', height: '38px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--success-light)', color: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <GraduationCap size={20} />
@@ -193,7 +193,7 @@ export default function DashboardOverviewPage() {
             {kpis.confirmed_enrollments || 0}
           </div>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginTop: '0.4rem' }}>
-            {locale === 'ar' ? 'طلاب في الأفواج الحالية' : 'Étudiants en cours'}
+            {locale === 'ar' ? 'طلاب في الأفواج الحالية' : locale === 'en' ? 'Students currently in cohorts' : 'Étudiants en cours'}
           </span>
         </div>
 
@@ -201,7 +201,7 @@ export default function DashboardOverviewPage() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-              {t('dash_kpi_courses')}
+              {locale === 'ar' ? 'الدورات التدريبية النشطة' : locale === 'en' ? 'Active Courses' : 'Formations Actives'}
             </span>
             <div style={{ width: '38px', height: '38px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--secondary-light)', color: '#9E6500', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <BookOpen size={20} />
@@ -211,7 +211,7 @@ export default function DashboardOverviewPage() {
             {kpis.active_courses || 0}
           </div>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginTop: '0.4rem' }}>
-            {locale === 'ar' ? 'في 7 لغات مختلفة' : 'En 7 langues'}
+            {locale === 'ar' ? 'في 7 لغات مختلفة' : locale === 'en' ? 'Across 7 languages' : 'En 7 langues'}
           </span>
         </div>
 
@@ -219,7 +219,7 @@ export default function DashboardOverviewPage() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-              {t('dash_kpi_sessions')}
+              {locale === 'ar' ? 'الحصص المجدولة' : locale === 'en' ? 'Upcoming Class Sessions' : 'Séances Planifiées'}
             </span>
             <div style={{ width: '38px', height: '38px', borderRadius: 'var(--radius-md)', backgroundColor: 'rgba(61, 27, 13, 0.08)', color: 'var(--dark-brown)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Clock size={20} />
@@ -229,7 +229,7 @@ export default function DashboardOverviewPage() {
             {kpis.upcoming_sessions || 0}
           </div>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginTop: '0.4rem' }}>
-            {locale === 'ar' ? 'حصص مجدولة هذا الأسبوع' : 'Séances cette semaine'}
+            {locale === 'ar' ? 'حصص مجدولة هذا الأسبوع' : locale === 'en' ? 'Sessions scheduled this week' : 'Séances cette semaine'}
           </span>
         </div>
 
@@ -237,7 +237,7 @@ export default function DashboardOverviewPage() {
         <div className="card" style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, var(--bg-warm) 100%)', border: '1.5px solid var(--secondary)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--dark-brown)' }}>
-              {t('dash_kpi_revenue')}
+              {locale === 'ar' ? 'إجمالي الإيرادات المحصلة' : locale === 'en' ? 'Total Revenue Collected' : 'Recettes Encaissées'}
             </span>
             <div style={{ width: '38px', height: '38px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--secondary)', color: 'var(--dark-brown)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <DollarSign size={20} />
@@ -247,7 +247,7 @@ export default function DashboardOverviewPage() {
             {kpis.total_revenue?.toLocaleString()} <span style={{ fontSize: '0.9rem' }}>{t('price_dzd')}</span>
           </div>
           <span style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 700, display: 'block', marginTop: '0.4rem' }}>
-            {locale === 'ar' ? 'تم تحصيلها وإصدار وصولات رسمية' : 'Encaissés avec reçus'}
+            {locale === 'ar' ? 'تم تحصيلها وإصدار وصولات رسمية' : locale === 'en' ? 'Collected with official receipts' : 'Encaissés avec reçus'}
           </span>
         </div>
 
@@ -255,7 +255,7 @@ export default function DashboardOverviewPage() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-              {locale === 'ar' ? 'أرصدة متبقية قيد الاستحقاق' : 'Soldes Restants Dus'}
+              {locale === 'ar' ? 'أرصدة متبقية قيد الاستحقاق' : locale === 'en' ? 'Remaining Balances Due' : 'Soldes Restants Dus'}
             </span>
             <div style={{ width: '38px', height: '38px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--warning-light)', color: 'var(--warning)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <AlertCircle size={20} />
@@ -265,7 +265,7 @@ export default function DashboardOverviewPage() {
             {kpis.total_balance_due?.toLocaleString()} <span style={{ fontSize: '0.9rem' }}>{t('price_dzd')}</span>
           </div>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginTop: '0.4rem' }}>
-            {locale === 'ar' ? 'أقساط ثانية مستحقة' : 'Tranches à recouvrer'}
+            {locale === 'ar' ? 'أقساط ثانية مستحقة' : locale === 'en' ? 'Remaining installments due' : 'Tranches à recouvrer'}
           </span>
         </div>
 
@@ -273,7 +273,7 @@ export default function DashboardOverviewPage() {
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-              {t('dash_kpi_teachers')}
+              {locale === 'ar' ? 'هيئة التدريس المعتمدة' : locale === 'en' ? 'Faculty Instructors' : 'Formateurs Agréés'}
             </span>
             <div style={{ width: '38px', height: '38px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <GraduationCap size={20} />
@@ -283,7 +283,7 @@ export default function DashboardOverviewPage() {
             {kpis.total_teachers || 0}
           </div>
           <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginTop: '0.4rem' }}>
-            {locale === 'ar' ? 'أساتذة ومدربين معتمدين' : 'Formateurs en activité'}
+            {locale === 'ar' ? 'أساتذة ومدربين معتمدين' : locale === 'en' ? 'Active certified instructors' : 'Formateurs en activité'}
           </span>
         </div>
       </div>

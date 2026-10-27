@@ -527,6 +527,16 @@ export const translations: Translations = {
     fr: 'Merci d\'avoir choisi Fassi7. Notre équipe vous contactera par téléphone ou WhatsApp sous 24h pour finaliser votre inscription.',
     en: 'Thank you for choosing Fassi7 Academy. Our academic advisor will contact you by phone or WhatsApp within 24 hours to confirm your placement and payment details.',
   },
+  seats_available: {
+    ar: 'مقاعد متوفرة',
+    fr: 'places disponibles',
+    en: 'seats available',
+  },
+  status_settled: {
+    ar: 'سدد بالكامل (خالص)',
+    fr: 'Réglé',
+    en: 'Settled',
+  },
 
   // Footer
   footer_about: {

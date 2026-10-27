@@ -16,7 +16,6 @@ import {
   ClipboardList,
   DollarSign,
   BarChart3,
-  Mail,
   Settings,
   LogOut,
   ExternalLink,
@@ -46,7 +45,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/dashboard/enrollments', label: t('menu_enrollments'), icon: ClipboardList },
     { href: '/dashboard/payments', label: t('menu_payments'), icon: DollarSign },
     { href: '/dashboard/reports', label: t('menu_reports'), icon: BarChart3 },
-    { href: '/dashboard/inquiries', label: t('menu_inquiries'), icon: Mail },
     ...(user?.role === 'super_admin'
       ? [
           { href: '/dashboard/staff', label: t('menu_staff'), icon: UserCheck },

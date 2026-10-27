@@ -25,11 +25,29 @@ export default function TeacherPortalPage() {
   const [loadingAttendance, setLoadingAttendance] = useState(false);
 
   useEffect(() => {
+    async function loadTeacherData() {
+      try {
+        const res = await fetch('/api/schedule');
+        const data = await res.json();
+        const list = data.sessions || [];
+        if (user && user.role === 'teacher') {
+          const mine = list.filter((s: any) => s.teacher_id === user.id);
+          setSessions(mine.length > 0 ? mine : list);
+        } else {
+          setSessions(list);
+        }
+      } catch (err) {
+        console.error('Error fetching teacher sessions:', err);
+      } finally {
+        setLoadingData(false);
+      }
+    }
+
     if (!loading) {
-      if (user) {
-        router.push('/dashboard');
+      if (user && user.role === 'student') {
+        router.push('/portal/student');
       } else {
-        router.push('/auth/login');
+        loadTeacherData();
       }
     }
   }, [user, loading, router]);

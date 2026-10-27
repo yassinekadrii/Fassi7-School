@@ -19,10 +19,9 @@ export async function GET(request: Request) {
         tl.name_en as language_name_en,
         tl.flag_emoji,
         tl.code as language_code,
-        COUNT(DISTINCT e.id) as enrolled_count
+        (SELECT COUNT(*) FROM enrollments WHERE course_id = c.id AND status IN ('accepted', 'awaiting_payment', 'confirmed')) as enrolled_count
       FROM courses c
       JOIN teaching_languages tl ON tl.id = c.language_id
-      LEFT JOIN enrollments e ON e.course_id = c.id AND e.status IN ('accepted', 'awaiting_payment', 'confirmed')
       WHERE c.is_archived = 0
     `;
 

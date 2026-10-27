@@ -85,7 +85,7 @@ export async function PUT(request: Request) {
     if (authError) return NextResponse.json({ error: authError.error }, { status: authError.status });
 
     const body = await request.json();
-    const { id, code, name_ar, name_fr, name_en, slug, description_ar, description_fr, flag_emoji, display_order, is_published, is_archived } = body;
+    const { id, code, name_ar, name_fr, name_en, slug, description_ar, description_fr, description_en, flag_emoji, display_order, is_published, is_archived } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'ID requis' }, { status: 400 });
@@ -101,12 +101,13 @@ export async function PUT(request: Request) {
           slug = COALESCE(?, slug),
           description_ar = COALESCE(?, description_ar),
           description_fr = COALESCE(?, description_fr),
+          description_en = COALESCE(?, description_en),
           flag_emoji = COALESCE(?, flag_emoji),
           display_order = COALESCE(?, display_order),
           is_published = COALESCE(?, is_published),
           is_archived = COALESCE(?, is_archived)
       WHERE id = ?
-    `).run(code, name_ar, name_fr, name_en, slug, description_ar, description_fr, flag_emoji, display_order, is_published, is_archived, id);
+    `).run(code, name_ar, name_fr, name_en, slug, description_ar, description_fr, description_en, flag_emoji, display_order, is_published, is_archived, id);
 
     db.prepare('INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)')
       .run(user!.id, 'UPDATE_LANGUAGE', 'teaching_language', id, `Updated language ID ${id}`);

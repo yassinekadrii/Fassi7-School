@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
-import { ClipboardList, Filter, CheckCircle2, AlertCircle, Edit2, X, Phone, Mail } from 'lucide-react';
+import { 
+  ClipboardList, Filter, CheckCircle2, AlertCircle, Edit2, X, Phone, Mail, 
+  MessageCircle, Send, Check, DollarSign, ExternalLink, ShieldCheck 
+} from 'lucide-react';
 
 export default function EnrollmentsManagePage() {
   const { t, locale } = useLanguage();
@@ -14,8 +17,11 @@ export default function EnrollmentsManagePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState<any>(null);
   const [newStatus, setNewStatus] = useState('accepted');
+  const [paymentStatus, setPaymentStatus] = useState('pending');
+  const [amountPaid, setAmountPaid] = useState<number>(0);
   const [adminNotes, setAdminNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
   const loadEnrollments = async () => {
     try {
@@ -37,6 +43,8 @@ export default function EnrollmentsManagePage() {
   const openStatusModal = (e: any) => {
     setSelectedEnrollment(e);
     setNewStatus(e.status);
+    setPaymentStatus(e.payment_status || 'pending');
+    setAmountPaid(e.amount_paid || 0);
     setAdminNotes(e.notes || '');
     setIsModalOpen(true);
   };
@@ -53,12 +61,20 @@ export default function EnrollmentsManagePage() {
         body: JSON.stringify({
           id: selectedEnrollment.id,
           status: newStatus,
+          payment_status: paymentStatus,
+          amount_paid: Number(amountPaid),
           notes: adminNotes,
         }),
       });
 
       if (res.ok) {
         setIsModalOpen(false);
+        setActionSuccess(
+          locale === 'ar'
+            ? 'تم تحديث حالة الملف بنجاح وتفعيل التغييرات!'
+            : 'Dossier mis à jour et validé avec succès!'
+        );
+        setTimeout(() => setActionSuccess(null), 4000);
         loadEnrollments();
       }
     } catch (err) {
@@ -66,6 +82,59 @@ export default function EnrollmentsManagePage() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // Quick 1-click activate and confirm payment (CCP / BaridiMob received)
+  const handleQuickActivate = async (enr: any) => {
+    const coursePrice = enr.course_price || enr.amount_due || 0;
+    try {
+      const res = await fetch('/api/enrollments', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: enr.id,
+          status: 'confirmed',
+          payment_status: 'paid',
+          amount_paid: coursePrice,
+          notes: (enr.notes ? enr.notes + ' | ' : '') + 'Paiement CCP/BaridiMob reçu & validé par l\'administration.',
+        }),
+      });
+
+      if (res.ok) {
+        setActionSuccess(
+          locale === 'ar'
+            ? `تم تفعيل حساب الطالب (${enr.student_name}) وتأكيد الدفع بالكامل!`
+            : `Compte et paiement de (${enr.student_name}) validés et activés!`
+        );
+        setTimeout(() => setActionSuccess(null), 4000);
+        loadEnrollments();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const formatWhatsAppPhone = (phone: string) => {
+    if (!phone) return '213555000000';
+    let p = phone.replace(/[^0-9]/g, '');
+    if (p.startsWith('0')) {
+      p = '213' + p.substring(1);
+    } else if (!p.startsWith('213') && p.length === 9) {
+      p = '213' + p;
+    }
+    return p;
+  };
+
+  const getWhatsAppInviteUrl = (enr: any) => {
+    const cleanPhone = formatWhatsAppPhone(enr.student_phone);
+    const msg = locale === 'ar'
+      ? `مرحباً ${enr.student_name}! تم تأكيد تسجيلك في أكاديمية فصيح (Fassi7 School) لدورة: ${enr.course_title_ar || enr.course_title_fr}. إليك رابط مجموعة الواتساب الخاصة بقسمك: https://chat.whatsapp.com/Fassi7SchoolGroup - بالتوفيق!`
+      : `Bonjour ${enr.student_name}! Votre inscription à Fassi7 School pour la formation (${enr.course_title_fr}) a été validée avec succès! Rejoignez le groupe WhatsApp officiel de votre promotion: https://chat.whatsapp.com/Fassi7SchoolGroup - Bienvenue parmi nous!`;
+    return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
+  };
+
+  const getTelegramInviteUrl = (enr: any) => {
+    return `https://t.me/Fassi7SchoolGroup`;
   };
 
   const getStatusBadge = (st: string) => {
@@ -79,7 +148,7 @@ export default function EnrollmentsManagePage() {
       case 'awaiting_payment':
         return <span className="badge badge-secondary">{t('status_awaiting_payment')}</span>;
       case 'confirmed':
-        return <span className="badge badge-success">{t('status_confirmed')}</span>;
+        return <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}><CheckCircle2 size={12} /> {t('status_confirmed')}</span>;
       case 'completed':
         return <span className="badge badge-dark">{t('status_completed')}</span>;
       case 'cancelled':
@@ -98,8 +167,8 @@ export default function EnrollmentsManagePage() {
           </h1>
           <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             {locale === 'ar'
-              ? 'متابعة مسار التسجيل: من الطلب الأولي حتى القبول والتأكيد النهائي'
-              : 'Gestion des candidatures, examen des dossiers et validation'}
+              ? 'متابعة مسار التسجيل: من الطلب الأولي حتى تسديد BaridiMob/CCP، التفعيل، وإضافة المجموعات'
+              : 'Workflow inscriptions: réception, paiement CCP/BaridiMob, validation & intégration WhatsApp / Telegram'}
           </p>
         </div>
 
@@ -118,6 +187,66 @@ export default function EnrollmentsManagePage() {
         </div>
       </div>
 
+      {actionSuccess && (
+        <div style={{ 
+          background: '#DEF7EC', 
+          color: '#03543F', 
+          padding: '0.85rem 1.25rem', 
+          borderRadius: '12px', 
+          marginBottom: '1.5rem', 
+          fontSize: '0.9rem', 
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.6rem',
+          border: '1px solid #BCF0DA'
+        }}>
+          <CheckCircle2 size={18} color="#0E9F6E" />
+          <span>{actionSuccess}</span>
+        </div>
+      )}
+
+      {/* Workflow Guidance Card */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(250,70,29,0.06) 0%, rgba(255,173,24,0.08) 100%)',
+        border: '1px solid rgba(250,70,29,0.2)',
+        borderRadius: '14px',
+        padding: '1.25rem',
+        marginBottom: '1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '1rem'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'var(--primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ShieldCheck size={24} />
+          </div>
+          <div>
+            <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 800, color: 'var(--dark-brown)' }}>
+              {locale === 'ar' ? 'دورة التسجيل المتكاملة في الأكاديمية' : 'Procédure d\'admission & intégration'}
+            </h4>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+              {locale === 'ar'
+                ? '1. استلام الطلب ➔ 2. مراجعة إشعار Instagram / WhatsApp ➔ 3. تأكيد تسديد BaridiMob أو CCP ➔ 4. تفعيل الحساب وإرسال رابط مجموعة WhatsApp أو Telegram'
+                : '1. Inscription reçue ➔ 2. Contact Instagram/WhatsApp ➔ 3. Confirmation CCP/BaridiMob ➔ 4. Activation du compte & invitation WhatsApp / Telegram'}
+            </p>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <a
+            href="https://instagram.com/fassi7.school"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-outline btn-sm"
+            style={{ fontSize: '0.78rem', background: '#fff', color: '#E1306C', borderColor: '#E1306C', textDecoration: 'none' }}
+          >
+            📸 Instagram DM
+          </a>
+        </div>
+      </div>
+
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-wrapper">
           <table className="table">
@@ -128,7 +257,8 @@ export default function EnrollmentsManagePage() {
                 <th>{locale === 'ar' ? 'تاريخ الطلب' : 'Date d\'envoi'}</th>
                 <th>{locale === 'ar' ? 'حالة الطلب' : 'Statut Dossier'}</th>
                 <th>{locale === 'ar' ? 'حالة الدفع' : 'Paiement'}</th>
-                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'معالجة' : 'Action'}</th>
+                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'المجموعات والتفعيل' : 'Groupes & Activation'}</th>
+                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'إجراء' : 'Action'}</th>
               </tr>
             </thead>
             <tbody>
@@ -175,13 +305,80 @@ export default function EnrollmentsManagePage() {
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
+                    <div style={{ display: 'inline-flex', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                      {/* WhatsApp Group Invite */}
+                      <a
+                        href={getWhatsAppInviteUrl(enr)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-outline btn-sm"
+                        style={{
+                          padding: '0.3rem 0.6rem',
+                          fontSize: '0.75rem',
+                          gap: '0.25rem',
+                          background: '#E8F5E9',
+                          borderColor: '#25D366',
+                          color: '#1E7E34',
+                          textDecoration: 'none',
+                          fontWeight: 700
+                        }}
+                        title={locale === 'ar' ? 'إرسال رابط مجموعة الواتساب' : 'Envoyer lien groupe WhatsApp'}
+                      >
+                        <MessageCircle size={13} color="#25D366" />
+                        <span>WhatsApp</span>
+                      </a>
+
+                      {/* Telegram Group Invite */}
+                      <a
+                        href={getTelegramInviteUrl(enr)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-outline btn-sm"
+                        style={{
+                          padding: '0.3rem 0.6rem',
+                          fontSize: '0.75rem',
+                          gap: '0.25rem',
+                          background: '#E1F5FE',
+                          borderColor: '#0288D1',
+                          color: '#0277BD',
+                          textDecoration: 'none',
+                          fontWeight: 700
+                        }}
+                        title={locale === 'ar' ? 'إرسال رابط مجموعة تيليجرام' : 'Envoyer lien groupe Telegram'}
+                      >
+                        <Send size={13} color="#0288D1" />
+                        <span>Telegram</span>
+                      </a>
+
+                      {/* Quick 1-click activate button if not confirmed */}
+                      {enr.status !== 'confirmed' && (
+                        <button
+                          onClick={() => handleQuickActivate(enr)}
+                          className="btn-primary btn-sm"
+                          style={{
+                            padding: '0.3rem 0.6rem',
+                            fontSize: '0.75rem',
+                            gap: '0.25rem',
+                            background: '#0E9F6E',
+                            borderColor: '#0E9F6E',
+                            fontWeight: 700
+                          }}
+                          title={locale === 'ar' ? 'تأكيد دفع BaridiMob/CCP وتفعيل الحساب' : 'Valider paiement & Activer'}
+                        >
+                          <Check size={13} />
+                          <span>{locale === 'ar' ? 'تفعيل فوري' : 'Activer'}</span>
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
                     <button
                       onClick={() => openStatusModal(enr)}
                       className="btn-outline btn-sm"
                       style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', gap: '0.3rem' }}
                     >
                       <Edit2 size={13} />
-                      <span>{locale === 'ar' ? 'تحديث' : 'Mettre à jour'}</span>
+                      <span>{locale === 'ar' ? 'تعديل' : 'Gérer'}</span>
                     </button>
                   </td>
                 </tr>
@@ -191,14 +388,14 @@ export default function EnrollmentsManagePage() {
         </div>
       </div>
 
-      {/* Modal: Update Enrollment Status */}
+      {/* Modal: Update Enrollment Status & Payment */}
       {isModalOpen && selectedEnrollment && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px' }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '540px' }}>
             <div className="modal-header">
               <div>
                 <h3 style={{ fontSize: '1.25rem', margin: 0 }}>
-                  {locale === 'ar' ? 'تحديث حالة ملف التسجيل' : 'Mise à Jour du Dossier'}
+                  {locale === 'ar' ? 'معالجة ملف التسجيل وتأكيد الدفع' : 'Gestion du Dossier & Validation Paiement'}
                 </h3>
                 <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                   {selectedEnrollment.student_name} • {selectedEnrollment.course_title_fr}
@@ -211,6 +408,42 @@ export default function EnrollmentsManagePage() {
 
             <form onSubmit={handleUpdateStatus}>
               <div className="modal-body">
+                {/* Quick Community Group Actions */}
+                <div style={{ background: '#F8FAFC', padding: '0.85rem', borderRadius: '10px', marginBottom: '1.25rem', border: '1px solid #E2E8F0' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--dark-brown)', display: 'block', marginBottom: '0.5rem' }}>
+                    {locale === 'ar' ? 'روابط المجموعات المباشرة للطالب:' : 'Liens directs d\'intégration de l\'étudiant :'}
+                  </label>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <a
+                      href={getWhatsAppInviteUrl(selectedEnrollment)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-outline btn-sm"
+                      style={{ background: '#25D366', color: '#fff', borderColor: '#25D366', textDecoration: 'none', fontSize: '0.8rem', gap: '0.35rem' }}
+                    >
+                      <MessageCircle size={14} /> WhatsApp Groupe
+                    </a>
+                    <a
+                      href={getTelegramInviteUrl(selectedEnrollment)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-outline btn-sm"
+                      style={{ background: '#0288D1', color: '#fff', borderColor: '#0288D1', textDecoration: 'none', fontSize: '0.8rem', gap: '0.35rem' }}
+                    >
+                      <Send size={14} /> Telegram Groupe
+                    </a>
+                    <a
+                      href="https://instagram.com/fassi7.school"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-outline btn-sm"
+                      style={{ background: '#E1306C', color: '#fff', borderColor: '#E1306C', textDecoration: 'none', fontSize: '0.8rem', gap: '0.35rem' }}
+                    >
+                      📸 Instagram DM
+                    </a>
+                  </div>
+                </div>
+
                 <div className="form-group">
                   <label className="form-label">{locale === 'ar' ? 'تغيير حالة الملف' : 'Statut d\'inscription'} *</label>
                   <select
@@ -228,11 +461,36 @@ export default function EnrollmentsManagePage() {
                   </select>
                 </div>
 
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="form-group">
+                    <label className="form-label">{locale === 'ar' ? 'حالة الدفع (CCP / BaridiMob)' : 'Statut Paiement'}</label>
+                    <select
+                      value={paymentStatus}
+                      onChange={(e) => setPaymentStatus(e.target.value)}
+                      className="form-select"
+                    >
+                      <option value="pending">{t('status_pending')}</option>
+                      <option value="partially_paid">{t('status_partially_paid')}</option>
+                      <option value="paid">{t('status_paid')}</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">{locale === 'ar' ? 'المبلغ المسدد (دج)' : 'Montant Réglé (DZD)'}</label>
+                    <input
+                      type="number"
+                      value={amountPaid}
+                      onChange={(e) => setAmountPaid(Number(e.target.value))}
+                      className="form-input"
+                    />
+                  </div>
+                </div>
+
                 <div className="form-group">
                   <label className="form-label">{locale === 'ar' ? 'ملاحظات الإدارة الداخلية' : 'Notes internes'}</label>
                   <textarea
                     rows={3}
-                    placeholder={locale === 'ar' ? 'مثال: تم الاتصال بالطالب وتأكيد مستواه الشفهي...' : 'Ex: Test de niveau effectué par téléphone...'}
+                    placeholder={locale === 'ar' ? 'مثال: تم التحقق من وصل BaridiMob، وتأكيد انضمام الطالب لمجموعة الواتساب...' : 'Ex: Reçu BaridiMob vérifié, étudiant ajouté au groupe WhatsApp...'}
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
                     className="form-textarea"

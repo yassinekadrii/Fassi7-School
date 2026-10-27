@@ -180,19 +180,103 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: '0 auto 1.25rem auto',
+                  margin: '0 auto 1rem auto',
                 }}
               >
                 <CheckCircle2 size={36} />
               </div>
-              <h3 style={{ fontSize: '1.4rem', color: 'var(--dark-brown)', marginBottom: '0.75rem' }}>
-                {t('form_success_title')}
+
+              <h3 style={{ fontSize: '1.4rem', color: 'var(--dark-brown)', marginBottom: '0.5rem' }}>
+                {locale === 'ar' ? 'تم استلام طلب تسجيلك بنجاح!' : locale === 'en' ? 'Registration Submitted Successfully!' : 'Demande d\'inscription enregistrée !'}
               </h3>
-              <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '2rem' }}>
-                {t('form_success_desc')}
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '1.5rem' }}>
+                {locale === 'ar'
+                  ? 'تم إرسال طلبك للوحة الإدارة. لتأكيد حجز مقعدك وتفعيل حسابك سريعاً، يرجى إتمام الخطوات التالية:'
+                  : locale === 'en'
+                  ? 'Your application has been received by our administration. To secure your seat and activate your access, follow these quick steps:'
+                  : 'Votre demande est transmise à l\'administration. Pour valider votre place et activer votre accès, suivez ces étapes :'}
               </p>
-              <button onClick={onClose} className="btn-primary" style={{ width: '100%' }}>
-                {locale === 'ar' ? 'حسناً، تم' : locale === 'en' ? 'Done, Close' : 'Fermer'}
+
+              {/* Action Buttons: Instagram DM & WhatsApp */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                <a
+                  href={`https://ig.me/m/fassi7.school`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-outline"
+                  style={{
+                    backgroundColor: '#FFF0F5',
+                    borderColor: '#E1306C',
+                    color: '#E1306C',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    padding: '0.75rem',
+                    justifyContent: 'center',
+                    textDecoration: 'none',
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                >
+                  <span>📸</span>
+                  <span>{locale === 'ar' ? 'رسالة إنستغرام (DM)' : 'Instagram DM'}</span>
+                </a>
+
+                <a
+                  href={`https://wa.me/213550123456?text=${encodeURIComponent(
+                    `Hello Fassi7 Academy! I just submitted my enrollment for ${getLocalizedCourseTitle(currentCourse, locale)} (${name}, ${phone}).`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-outline"
+                  style={{
+                    backgroundColor: '#F0FDF4',
+                    borderColor: '#25D366',
+                    color: '#16A34A',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    padding: '0.75rem',
+                    justifyContent: 'center',
+                    textDecoration: 'none',
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                >
+                  <span>💬</span>
+                  <span>{locale === 'ar' ? 'تأكيد عبر واتساب' : 'WhatsApp'}</span>
+                </a>
+              </div>
+
+              {/* BaridiMob & CCP Payment Box */}
+              <div
+                style={{
+                  backgroundColor: 'var(--bg-warm)',
+                  border: '1.5px solid var(--border)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '1.1rem',
+                  textAlign: locale === 'ar' ? 'right' : 'left',
+                  marginBottom: '1.5rem',
+                  fontSize: '0.85rem',
+                }}
+              >
+                <div style={{ fontWeight: 800, color: 'var(--primary)', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>💳</span>
+                  <span>{locale === 'ar' ? 'بيانات الدفع الرسمية (BaridiMob / CCP):' : 'Official Payment Details (BaridiMob & CCP):'}</span>
+                </div>
+                <div style={{ marginBottom: '0.4rem' }}>
+                  <strong>BaridiMob RIP:</strong> <code style={{ backgroundColor: '#FFFFFF', padding: '2px 6px', borderRadius: '4px', fontWeight: 800 }}>007 99999 00012345678 90</code>
+                </div>
+                <div style={{ marginBottom: '0.6rem' }}>
+                  <strong>CCP Account:</strong> <code style={{ backgroundColor: '#FFFFFF', padding: '2px 6px', borderRadius: '4px', fontWeight: 800 }}>12345678 Clé 90</code> (Fassi7 Academy)
+                </div>
+                <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  {locale === 'ar'
+                    ? 'بعد التحويل، أرسل صورة الوصل عبر إنستغرام أو واتساب ليقوم المشرف بتفعيل حسابك فوراً وإضافتك إلى مجموعة الفوج (WhatsApp / Telegram).'
+                    : locale === 'en'
+                    ? 'After transferring, send your receipt slip via Instagram DM or WhatsApp. Our team will activate your profile and add you directly to the cohort WhatsApp/Telegram group.'
+                    : 'Après paiement, envoyez le reçu par Instagram ou WhatsApp pour activer votre compte et rejoindre le groupe WhatsApp/Telegram de votre promotion.'}
+                </p>
+              </div>
+
+              <button onClick={onClose} className="btn-primary" style={{ width: '100%', padding: '0.85rem' }}>
+                {locale === 'ar' ? 'تم، إغلاق النافذة' : locale === 'en' ? 'Got It, Close Window' : 'Fermer'}
               </button>
             </div>
           ) : (
