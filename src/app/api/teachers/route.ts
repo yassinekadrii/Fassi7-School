@@ -124,7 +124,7 @@ export async function PUT(request: Request) {
     if (password && password.trim().length > 0) {
       const salt = bcrypt.genSaltSync(10);
       const passHash = bcrypt.hashSync(password.trim(), salt);
-      db.prepare('UPDATE users SET password_hash = ? WHERE id = ? AND role = "teacher"').run(passHash, id);
+      db.prepare("UPDATE users SET password_hash = ? WHERE id = ? AND role = 'teacher'").run(passHash, id);
     }
 
     db.prepare(`
@@ -145,8 +145,11 @@ export async function PUT(request: Request) {
       .run(user!.id, 'UPDATE_TEACHER', 'user', id, `Updated teacher ID ${id}`);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error updating teacher:', error);
-    return NextResponse.json({ error: 'Erreur lors de la modification' }, { status: 500 });
+    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      return NextResponse.json({ error: 'Cet email est déjà utilisé par un autre compte' }, { status: 409 });
+    }
+    return NextResponse.json({ error: error.message || 'Erreur lors de la modification' }, { status: 500 });
   }
 }
