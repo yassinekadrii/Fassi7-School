@@ -28,6 +28,8 @@ export default function HomePage() {
   const { t, locale, dir } = useLanguage();
   const [courses, setCourses] = useState<any[]>([]);
   const [languages, setLanguages] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
+  const [selectedLangFilter, setSelectedLangFilter] = useState<number | 'all'>('all');
   const [loading, setLoading] = useState(true);
   const [selectedCourseForEnroll, setSelectedCourseForEnroll] = useState<any>(null);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
@@ -36,14 +38,17 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [cRes, lRes] = await Promise.all([
+        const [cRes, lRes, tRes] = await Promise.all([
           fetch('/api/courses?published_only=true'),
           fetch('/api/languages?published_only=true'),
+          fetch('/api/teachers'),
         ]);
         const cData = await cRes.json();
         const lData = await lRes.json();
+        const tData = await tRes.json();
         setCourses(cData.courses || []);
         setLanguages(lData.languages || []);
+        setTeachers(tData.teachers || []);
       } catch (err) {
         console.error('Error fetching home data:', err);
       } finally {
@@ -917,15 +922,203 @@ export default function HomePage() {
             </Link>
           </div>
 
+          {/* Quick Language Filter Pills */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
+            <button
+              onClick={() => setSelectedLangFilter('all')}
+              className={selectedLangFilter === 'all' ? 'btn-primary btn-sm' : 'btn-outline btn-sm'}
+              style={{ borderRadius: 'var(--radius-full)', padding: '0.4rem 0.9rem', fontSize: '0.84rem' }}
+            >
+              <span>{locale === 'ar' ? 'جميع اللغات' : locale === 'en' ? 'All Languages' : 'Toutes les langues'}</span>
+              <span style={{ opacity: 0.8, fontSize: '0.78rem' }}>({courses.length})</span>
+            </button>
+            {languages.map((lang) => {
+              const count = courses.filter((c) => c.language_id === lang.id).length;
+              if (count === 0) return null;
+              const isSelected = selectedLangFilter === lang.id;
+              return (
+                <button
+                  key={lang.id}
+                  onClick={() => setSelectedLangFilter(lang.id)}
+                  className={isSelected ? 'btn-primary btn-sm' : 'btn-outline btn-sm'}
+                  style={{ borderRadius: 'var(--radius-full)', padding: '0.4rem 0.9rem', fontSize: '0.84rem', gap: '0.35rem' }}
+                >
+                  <span>{lang.flag_emoji}</span>
+                  <span>{locale === 'ar' ? lang.name_ar : locale === 'en' ? (lang.name_en || lang.name_fr) : lang.name_fr}</span>
+                  <span style={{ opacity: 0.8, fontSize: '0.75rem' }}>({count})</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Courses Grid - Shows all matching published courses */}
+          {(() => {
+            const displayedCourses = selectedLangFilter === 'all'
+              ? courses
+              : courses.filter((c) => c.language_id === selectedLangFilter);
+
+            if (displayedCourses.length === 0) {
+              return (
+                <div className="card" style={{ textAlign: 'center', padding: '3.5rem 1.5rem' }}>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>
+                    {locale === 'ar' ? 'لا توجد دورات مسجلة لهذه الفئة حالياً.' : 'Aucune formation pour cette sélection.'}
+                  </p>
+                </div>
+              );
+            }
+
+            return (
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(330px, 1fr))',
+                  gap: '2rem',
+                }}
+              >
+                {displayedCourses.map((course) => (
+                  <CourseCard key={course.id} course={course} onEnroll={handleOpenEnroll} />
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      </section>
+
+      {/* MEET OUR EXPERT FACULTY & INSTRUCTORS */}
+      <section style={{ padding: '5.5rem 0', backgroundColor: '#FFFFFF', borderBottom: '1px solid var(--border)' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', maxWidth: '750px', margin: '0 auto 3.5rem auto' }}>
+            <span className="badge badge-primary" style={{ marginBottom: '0.85rem' }}>
+              <GraduationCap size={15} />
+              {locale === 'ar' ? 'هيئة التدريس المعتمدة' : locale === 'en' ? 'Certified Faculty' : 'Nos Formateurs'}
+            </span>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', fontWeight: 900, marginBottom: '1rem', color: 'var(--dark-brown)' }}>
+              {locale === 'ar' ? 'نخبة من الأساتذة والمدربين المعتمدين' : locale === 'en' ? 'Learn from Elite Certified Educators' : 'Apprenez avec Nos Meilleurs Formateurs'}
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.7 }}>
+              {locale === 'ar'
+                ? 'فريق من الأساتذة المتخصصين ذوي الخبرة العالية في تدريس اللغات والتحضير للامتحانات الدولية الرسمية (IELTS, TCF, Goethe).'
+                : locale === 'en'
+                ? 'Qualified language mentors dedicated to conversational mastery, business communication, and top exam percentiles.'
+                : 'Des enseignants diplômés et passionnés qui vous accompagnent vers la réussite de vos examens et votre fluidité orale.'}
+            </p>
+          </div>
+
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(330px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
               gap: '2rem',
             }}
           >
-            {courses.slice(0, 6).map((course) => (
-              <CourseCard key={course.id} course={course} onEnroll={handleOpenEnroll} />
+            {teachers.map((tch) => (
+              <div
+                key={tch.id}
+                className="card card-interactive"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  borderRadius: 'var(--radius-xl)',
+                  border: '1.5px solid var(--border)',
+                  padding: '1.75rem',
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
+                    <div
+                      style={{
+                        width: '56px',
+                        height: '56px',
+                        borderRadius: 'var(--radius-full)',
+                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
+                        color: '#FFFFFF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 900,
+                        fontSize: '1.25rem',
+                        flexShrink: 0,
+                        boxShadow: '0 4px 15px rgba(250, 70, 29, 0.25)',
+                      }}
+                    >
+                      {tch.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '1.18rem', margin: 0, color: 'var(--dark-brown)', fontWeight: 800 }}>
+                        {tch.name}
+                      </h3>
+                      <span
+                        style={{
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          color: 'var(--primary)',
+                          display: 'block',
+                          marginTop: '0.15rem',
+                        }}
+                      >
+                        {tch.qualifications_fr || tch.specialties_fr}
+                      </span>
+                    </div>
+                  </div>
+
+                  {tch.bio_fr && (
+                    <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+                      {tch.bio_fr}
+                    </p>
+                  )}
+
+                  {/* Courses taught by this teacher */}
+                  <div style={{ marginBottom: '1rem' }}>
+                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--dark-brown)', display: 'block', marginBottom: '0.45rem' }}>
+                      {locale === 'ar' ? 'الدورات التي يُدرّسها:' : 'Formations enseignées :'}
+                    </span>
+                    {tch.courses && tch.courses.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                        {tch.courses.map((c: any) => (
+                          <div
+                            key={c.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              background: 'var(--bg-warm)',
+                              border: '1px solid var(--border)',
+                              borderRadius: '6px',
+                              padding: '0.35rem 0.6rem',
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              color: 'var(--dark-brown)',
+                            }}
+                          >
+                            <span>{locale === 'ar' ? c.title_ar : c.title_fr}</span>
+                            <span className="badge badge-secondary" style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem' }}>
+                              {c.lang_name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                        {locale === 'ar' ? 'دورات قادمة قيد البرمجة' : 'Sessions en cours de programmation'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                    {tch.courses?.length || 0} {locale === 'ar' ? 'دورات نشطة' : 'cours actifs'}
+                  </span>
+                  <button
+                    onClick={() => handleOpenEnroll(tch.courses?.[0])}
+                    className="btn-primary btn-sm"
+                    style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
+                  >
+                    <span>{t('cta_enroll_now')}</span>
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
