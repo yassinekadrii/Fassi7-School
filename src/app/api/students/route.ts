@@ -29,12 +29,14 @@ export async function GET(request: Request) {
 
     // Fetch enrollments for each student
     const getEnrollments = db.prepare(`
-      SELECT e.id, e.status, e.payment_status, e.amount_due, e.amount_paid, e.enrolled_at,
-             c.title_ar, c.title_fr, tl.name_fr as language_name
+      SELECT e.id, e.course_id, e.status, e.payment_status, e.amount_due, e.amount_paid, e.enrolled_at, e.confirmed_at,
+             c.title_ar, c.title_fr, c.level as course_level, c.price as course_price,
+             tl.name_fr as language_name, tl.name_ar as language_name_ar, tl.flag_emoji
       FROM enrollments e
       JOIN courses c ON c.id = e.course_id
       JOIN teaching_languages tl ON tl.id = c.language_id
       WHERE e.student_id = ?
+      ORDER BY e.id DESC
     `);
 
     for (const s of students) {

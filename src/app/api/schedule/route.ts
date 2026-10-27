@@ -22,7 +22,8 @@ export async function GET(request: Request) {
         tl.name_fr as language_name_fr,
         tl.name_ar as language_name_ar,
         tl.name_en as language_name_en,
-        COUNT(DISTINCT a.id) as attendance_count
+        COUNT(DISTINCT a.id) as attendance_count,
+        (SELECT COUNT(*) FROM enrollments WHERE course_id = cs.course_id AND status IN ('confirmed', 'accepted')) as enrolled_students_count
       FROM class_sessions cs
       JOIN courses c ON c.id = cs.course_id
       JOIN users u ON u.id = cs.teacher_id
@@ -59,7 +60,21 @@ export async function GET(request: Request) {
 
     query += ` GROUP BY cs.id ORDER BY cs.start_time ASC `;
 
-    const sessions = db.prepare(query).all(...params);
+    const sessions = db.prepare(query).all(...params) as any[];
+
+    // Attach confirmed enrolled students for each session
+    const getEnrolled = db.prepare(`
+      SELECT u.id, u.name, u.email, u.phone
+      FROM enrollments e
+      JOIN users u ON u.id = e.student_id
+      WHERE e.course_id = ? AND e.status IN ('confirmed', 'accepted')
+      ORDER BY u.name ASC
+    `);
+
+    for (const session of sessions) {
+      session.enrolled_students = getEnrolled.all(session.course_id);
+    }
+
     return NextResponse.json({ sessions });
   } catch (error) {
     console.error('Error fetching schedule:', error);
@@ -151,7 +166,7 @@ export async function PUT(request: Request) {
     if (authError) return NextResponse.json({ error: authError.error }, { status: authError.status });
 
     const body = await request.json();
-    const { id, status, summary_notes, meeting_url, start_time, end_time } = body;
+    const { id, status, summary_notes, meeting_url, start_time, end_time, room_name, title_fr, title_ar } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'ID requis' }, { status: 400 });
@@ -164,6 +179,18 @@ export async function PUT(request: Request) {
     if (status) {
       updates.push('status = ?');
       values.push(status);
+    }
+    if (room_name !== undefined) {
+      updates.push('room_name = ?');
+      values.push(room_name);
+    }
+    if (title_fr) {
+      updates.push('title_fr = ?');
+      values.push(title_fr);
+    }
+    if (title_ar) {
+      updates.push('title_ar = ?');
+      values.push(title_ar);
     }
     if (summary_notes !== undefined) {
       updates.push('summary_notes = ?');

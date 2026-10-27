@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
     // Get all enrolled students in the course, along with any recorded attendance
     const query = `
-      SELECT u.id as student_id, u.name as student_name, u.email as student_email,
+      SELECT u.id as student_id, u.name as student_name, u.email as student_email, u.phone as student_phone,
              a.status as attendance_status, a.notes as attendance_notes
       FROM enrollments e
       JOIN users u ON u.id = e.student_id
