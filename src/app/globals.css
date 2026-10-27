@@ -428,6 +428,8 @@ input, select, textarea {
   display: flex;
   min-height: 100vh;
   background: #FDF9F5;
+  position: relative;
+  width: 100%;
 }
 
 .dashboard-sidebar {
@@ -436,11 +438,22 @@ input, select, textarea {
   border-inline-end: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  position: sticky;
+  position: fixed;
   top: 0;
+  bottom: 0;
   height: 100vh;
   z-index: 50;
   transition: transform var(--transition-normal);
+}
+
+[dir="ltr"] .dashboard-sidebar {
+  left: 0;
+  right: auto;
+}
+
+[dir="rtl"] .dashboard-sidebar {
+  right: 0;
+  left: auto;
 }
 
 .dashboard-main {
@@ -448,6 +461,14 @@ input, select, textarea {
   display: flex;
   flex-direction: column;
   min-width: 0;
+}
+
+[dir="ltr"] .dashboard-main {
+  margin-left: 280px;
+}
+
+[dir="rtl"] .dashboard-main {
+  margin-right: 280px;
 }
 
 .dashboard-header {
@@ -542,6 +563,16 @@ input, select, textarea {
     position: relative;
     border-inline-end: none;
     border-bottom: 1px solid var(--border);
+  }
+  [dir="ltr"] .dashboard-sidebar,
+  [dir="rtl"] .dashboard-sidebar {
+    left: auto;
+    right: auto;
+  }
+  [dir="ltr"] .dashboard-main,
+  [dir="rtl"] .dashboard-main {
+    margin-left: 0;
+    margin-right: 0;
   }
   .dashboard-content {
     padding: 1.25rem;
