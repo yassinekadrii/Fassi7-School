@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { Fassi7Logo } from '@/components/Fassi7Logo';
-import { LogIn, Lock, Mail, Shield, UserCheck, ArrowRight, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { LogIn, Lock, Mail, Shield, UserCheck, GraduationCap, ArrowRight, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminPortalPage() {
   const router = useRouter();
@@ -28,7 +28,13 @@ export default function AdminPortalPage() {
     setLoading(false);
 
     if (res.success) {
-      router.push('/dashboard');
+      if (res.user?.role === 'teacher') {
+        router.push('/portal/teacher');
+      } else if (res.user?.role === 'student') {
+        router.push('/portal/student');
+      } else {
+        router.push('/dashboard');
+      }
     } else {
       setError(
         res.error ||
@@ -41,12 +47,16 @@ export default function AdminPortalPage() {
     }
   };
 
-  const handleQuickLogin = async (role: 'super_admin' | 'academy_admin') => {
+  const handleQuickLogin = async (role: 'super_admin' | 'academy_admin' | 'teacher') => {
     setLoading(true);
     setError('');
     await quickLoginAs(role);
     setLoading(false);
-    router.push('/dashboard');
+    if (role === 'teacher') {
+      router.push('/portal/teacher');
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   return (
@@ -93,22 +103,22 @@ export default function AdminPortalPage() {
             }}
           >
             <Shield size={14} />
-            <span>{locale === 'ar' ? 'مسار إداري محمي (Hidden Portal)' : 'Portail d\'Accès Sécurisé'}</span>
+            <span>{locale === 'ar' ? 'بوابة الدخول المعتمدة' : 'Portail d\'Accès Sécurisé'}</span>
           </div>
 
           <h1 style={{ fontSize: '1.75rem', fontWeight: 900, marginBottom: '0.5rem', color: 'var(--dark-brown)' }}>
             {locale === 'ar'
-              ? 'تسجيل دخول الإدارة المركزية'
+              ? 'تسجيل دخول الإدارة، السكرتارية والأساتذة'
               : locale === 'en'
-              ? 'Central Administration Sign In'
-              : 'Connexion Direction & Administration'}
+              ? 'Administration, Secretariat & Teachers'
+              : 'Connexion Direction, Secrétariat & Enseignants'}
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', lineHeight: '1.5' }}>
             {locale === 'ar'
-              ? 'بوابة مخصصة حصرياً للمدير العام (Super Admin) وسكرتارية الأكاديمية (Admin).'
+              ? 'بوابة مخصصة للإدارة المركزية، سكرتارية الأكاديمية وهيئة التدريس المعتمدة.'
               : locale === 'en'
-              ? 'Restricted strictly to the Academy Owner (Super Admin) and Staff Secretary (Admin).'
-              : 'Accès réservé au Directeur Général (Super Admin) et au Secrétariat (Admin).'}
+              ? 'Restricted to Academy Direction, Staff Secretariat, and Certified Teachers.'
+              : 'Accès réservé à la Direction, au Secrétariat et aux Enseignants de l\'académie.'}
           </p>
         </div>
 
@@ -246,32 +256,32 @@ export default function AdminPortalPage() {
             }}
           >
             {locale === 'ar'
-              ? '⚡ تجربة فورية للحسابات الإدارية (1-Click)'
-              : '⚡ Accès Rapide Direction & Secrétariat'}
+              ? '⚡ تجربة فورية للحسابات (1-Click Demo)'
+              : '⚡ Accès Rapide Démo (1-Click)'}
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.65rem' }}>
             <button
               type="button"
               onClick={() => handleQuickLogin('super_admin')}
               className="btn-outline btn-sm"
               style={{
-                fontSize: '0.82rem',
-                padding: '0.8rem 0.6rem',
+                fontSize: '0.8rem',
+                padding: '0.75rem 0.5rem',
                 justifyContent: 'center',
                 flexDirection: 'column',
-                gap: '0.35rem',
+                gap: '0.3rem',
                 border: '1.5px solid var(--primary)',
                 backgroundColor: 'rgba(250, 70, 29, 0.05)',
                 borderRadius: 'var(--radius-md)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 800, color: 'var(--primary)' }}>
-                <Shield size={16} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800, color: 'var(--primary)' }}>
+                <Shield size={15} />
                 <span>Super Admin</span>
               </div>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                {locale === 'ar' ? 'المدير العام (Owner)' : 'Directeur Général'}
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                {locale === 'ar' ? 'المدير العام' : 'Directeur'}
               </span>
             </button>
 
@@ -280,22 +290,46 @@ export default function AdminPortalPage() {
               onClick={() => handleQuickLogin('academy_admin')}
               className="btn-outline btn-sm"
               style={{
-                fontSize: '0.82rem',
-                padding: '0.8rem 0.6rem',
+                fontSize: '0.8rem',
+                padding: '0.75rem 0.5rem',
                 justifyContent: 'center',
                 flexDirection: 'column',
-                gap: '0.35rem',
+                gap: '0.3rem',
                 border: '1.5px solid var(--secondary)',
                 backgroundColor: 'rgba(255, 173, 24, 0.06)',
                 borderRadius: 'var(--radius-md)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 800, color: 'var(--dark-brown)' }}>
-                <UserCheck size={16} color="var(--secondary)" />
-                <span>Admin</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800, color: 'var(--dark-brown)' }}>
+                <UserCheck size={15} color="var(--secondary)" />
+                <span>Secrétariat</span>
               </div>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                {locale === 'ar' ? 'السكرتارية (Secrétaire)' : 'Secrétariat d\'Académie'}
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                {locale === 'ar' ? 'السكرتارية' : 'Secrétaire'}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleQuickLogin('teacher')}
+              className="btn-outline btn-sm"
+              style={{
+                fontSize: '0.8rem',
+                padding: '0.75rem 0.5rem',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                gap: '0.3rem',
+                border: '1.5px solid #10B981',
+                backgroundColor: 'rgba(16, 185, 129, 0.06)',
+                borderRadius: 'var(--radius-md)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800, color: '#059669' }}>
+                <GraduationCap size={15} color="#10B981" />
+                <span>Enseignant</span>
+              </div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                {locale === 'ar' ? 'أستاذ (Présences)' : 'Professeur'}
               </span>
             </button>
           </div>

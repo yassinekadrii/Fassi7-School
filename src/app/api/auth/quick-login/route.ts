@@ -12,6 +12,9 @@ export async function POST(request: Request) {
       // Find active secretary account
       const sec = db.prepare("SELECT email FROM users WHERE role = 'academy_admin' AND status = 'active' ORDER BY id ASC LIMIT 1").get() as { email: string } | undefined;
       email = sec?.email || 'nadia@fassi7.com';
+    } else if (role === 'teacher') {
+      const tch = db.prepare("SELECT email FROM users WHERE role = 'teacher' AND status = 'active' ORDER BY id ASC LIMIT 1").get() as { email: string } | undefined;
+      email = tch?.email || 'sarah@fassi7.com';
     } else if (role !== 'super_admin') {
       return NextResponse.json({ error: 'Rôle non autorisé pour connexion' }, { status: 403 });
     }

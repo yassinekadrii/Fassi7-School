@@ -11,16 +11,22 @@ export async function POST(request: Request) {
     }
 
     const db = getDb();
-    const user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(email) as any;
+    const user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(email.trim()) as any;
 
     if (!user) {
-      return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 401 });
+      return NextResponse.json({ error: 'Identifiants incorrects ou compte introuvable' }, { status: 401 });
     }
 
-    // Only Owner (Super Admin) and Secretary (Admin) accounts can log in
-    if (user.role !== 'super_admin' && user.role !== 'academy_admin') {
+    // Allow Owner (super_admin), Secretary (academy_admin), and Teachers to log in
+    if (user.role !== 'super_admin' && user.role !== 'academy_admin' && user.role !== 'teacher' && user.role !== 'student') {
       return NextResponse.json({
-        error: 'Accès réservé exclusivement aux comptes administratifs (Direction et Secrétariat).'
+        error: 'Rôle non autorisé à se connecter sur ce portail.'
+      }, { status: 403 });
+    }
+
+    if (user.status === 'inactive' || user.status === 'suspended') {
+      return NextResponse.json({
+        error: 'Ce compte est inactif ou suspendu. Veuillez contacter l\'administration.'
       }, { status: 403 });
     }
 
@@ -41,7 +47,14 @@ export async function POST(request: Request) {
 
     const token = signToken(userSession);
 
-    const response = NextResponse.json({ user: userSession, success: true });
+    let redirectUrl = '/dashboard';
+    if (user.role === 'teacher') {
+      redirectUrl = '/portal/teacher';
+    } else if (user.role === 'student') {
+      redirectUrl = '/portal/student';
+    }
+
+    const response = NextResponse.json({ user: userSession, redirectUrl, success: true });
     response.cookies.set('fassi7_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

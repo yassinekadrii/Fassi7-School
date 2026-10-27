@@ -6,9 +6,9 @@ import { UserSession } from '@/lib/auth';
 interface AuthContextType {
   user: UserSession | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string; user?: UserSession; redirectUrl?: string }>;
   logout: () => Promise<void>;
-  quickLoginAs: (role: 'super_admin' | 'academy_admin') => Promise<void>;
+  quickLoginAs: (role: 'super_admin' | 'academy_admin' | 'teacher') => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await res.json();
       if (res.ok && data.user) {
         setUser(data.user);
-        return { success: true };
+        return { success: true, user: data.user, redirectUrl: data.redirectUrl };
       }
       return { success: false, error: data.error || 'Identifiants invalides' };
     } catch {
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const quickLoginAs = async (role: 'super_admin' | 'academy_admin') => {
+  const quickLoginAs = async (role: 'super_admin' | 'academy_admin' | 'teacher') => {
     try {
       const res = await fetch('/api/auth/quick-login', {
         method: 'POST',
