@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     if (authError) return NextResponse.json({ error: authError.error }, { status: authError.status });
 
     const body = await request.json();
-    const { name, email, password, phone, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate, status } = body;
+    const { name, email, password, phone, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate, status, course_ids } = body;
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Nom et email obligatoires' }, { status: 400 });
@@ -81,6 +81,14 @@ export async function POST(request: Request) {
       hourly_rate || 2500
     );
 
+    // Assign courses if specified
+    if (Array.isArray(course_ids) && course_ids.length > 0) {
+      const insertCT = db.prepare('INSERT OR IGNORE INTO course_teachers (course_id, teacher_user_id) VALUES (?, ?)');
+      for (const cid of course_ids) {
+        insertCT.run(Number(cid), newUserId);
+      }
+    }
+
     db.prepare('INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)')
       .run(user!.id, 'CREATE_TEACHER', 'user', newUserId, `Added teacher: ${name} (${email})`);
 
@@ -105,7 +113,7 @@ export async function PUT(request: Request) {
     if (authError) return NextResponse.json({ error: authError.error }, { status: authError.status });
 
     const body = await request.json();
-    const { id, name, email, password, phone, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate, status } = body;
+    const { id, name, email, password, phone, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate, status, course_ids } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'ID requis' }, { status: 400 });
@@ -140,6 +148,15 @@ export async function PUT(request: Request) {
         languages_spoken = COALESCE(excluded.languages_spoken, languages_spoken),
         hourly_rate = COALESCE(excluded.hourly_rate, hourly_rate)
     `).run(id, bio_ar, bio_fr, qualifications_ar, qualifications_fr, specialties_ar, specialties_fr, languages_spoken, hourly_rate);
+
+    // Update assigned courses if provided
+    if (Array.isArray(course_ids)) {
+      db.prepare('DELETE FROM course_teachers WHERE teacher_user_id = ?').run(id);
+      const insertCT = db.prepare('INSERT OR IGNORE INTO course_teachers (course_id, teacher_user_id) VALUES (?, ?)');
+      for (const cid of course_ids) {
+        insertCT.run(Number(cid), id);
+      }
+    }
 
     db.prepare('INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)')
       .run(user!.id, 'UPDATE_TEACHER', 'user', id, `Updated teacher ID ${id}`);

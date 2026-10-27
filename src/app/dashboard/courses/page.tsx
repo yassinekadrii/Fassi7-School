@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
-import { BookOpen, Plus, Edit2, Copy, Archive, CheckCircle, XCircle, Users, Clock, X } from 'lucide-react';
+import { BookOpen, Plus, Edit2, Copy, Archive, CheckCircle, XCircle, Users, Clock, X, GraduationCap } from 'lucide-react';
 
 export default function CoursesManagePage() {
   const { t, locale } = useLanguage();
@@ -184,7 +184,7 @@ export default function CoursesManagePage() {
                 <th>{locale === 'ar' ? 'الدورة واللغة' : 'Formation & Langue'}</th>
                 <th>{locale === 'ar' ? 'المستوى والصيغة' : 'Niveau & Format'}</th>
                 <th>{locale === 'ar' ? 'الرسوم' : 'Tarif'}</th>
-                <th>{locale === 'ar' ? 'المدرب المشرف' : 'Formateur'}</th>
+                <th>{locale === 'ar' ? 'الأستاذ المشرف' : 'Enseignant responsable'}</th>
                 <th>{locale === 'ar' ? 'التسجيلات' : 'Inscrits'}</th>
                 <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'إجراءات' : 'Actions'}</th>
               </tr>
@@ -223,11 +223,31 @@ export default function CoursesManagePage() {
                   </td>
                   <td>
                     {course.teachers && course.teachers.length > 0 ? (
-                      <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>
-                        {course.teachers[0].name}
-                      </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                        {course.teachers.map((tch: any) => (
+                          <div
+                            key={tch.id}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.4rem',
+                              background: '#ECFDF5',
+                              border: '1px solid #A7F3D0',
+                              color: '#065F46',
+                              padding: '0.25rem 0.6rem',
+                              borderRadius: 'var(--radius-full)',
+                              fontSize: '0.82rem',
+                              fontWeight: 800,
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            <GraduationCap size={13} color="#059669" />
+                            <span>{tch.name}</span>
+                          </div>
+                        ))}
+                      </div>
                     ) : (
-                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                      <span className="badge badge-secondary" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         {locale === 'ar' ? 'غير معين' : 'Non assigné'}
                       </span>
                     )}

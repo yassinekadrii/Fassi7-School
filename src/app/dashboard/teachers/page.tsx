@@ -12,6 +12,8 @@ import {
 export default function TeachersManagePage() {
   const { t, locale } = useLanguage();
   const [teachers, setTeachers] = useState<any[]>([]);
+  const [availableCourses, setAvailableCourses] = useState<any[]>([]);
+  const [selectedCourseIds, setSelectedCourseIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Modal State
@@ -32,11 +34,16 @@ export default function TeachersManagePage() {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  const loadTeachers = async () => {
+  const loadData = async () => {
     try {
-      const res = await fetch('/api/teachers');
-      const data = await res.json();
-      setTeachers(data.teachers || []);
+      const [tRes, cRes] = await Promise.all([
+        fetch('/api/teachers'),
+        fetch('/api/courses'),
+      ]);
+      const tData = await tRes.json();
+      const cData = await cRes.json();
+      setTeachers(tData.teachers || []);
+      setAvailableCourses(cData.courses || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -45,7 +52,7 @@ export default function TeachersManagePage() {
   };
 
   useEffect(() => {
-    loadTeachers();
+    loadData();
   }, []);
 
   const generateRandomPassword = () => {
@@ -70,6 +77,7 @@ export default function TeachersManagePage() {
     setBioFr('');
     setLanguagesSpoken('Anglais, Français, Arabe');
     setHourlyRate(2500);
+    setSelectedCourseIds([]);
     setError('');
     setIsModalOpen(true);
   };
@@ -87,6 +95,7 @@ export default function TeachersManagePage() {
     setBioFr(tch.bio_fr || '');
     setLanguagesSpoken(tch.languages_spoken || '');
     setHourlyRate(tch.hourly_rate || 2500);
+    setSelectedCourseIds(tch.courses ? tch.courses.map((c: any) => c.id) : []);
     setError('');
     setIsModalOpen(true);
   };
@@ -110,6 +119,7 @@ export default function TeachersManagePage() {
       bio_ar: bioFr,
       languages_spoken: languagesSpoken,
       hourly_rate: Number(hourlyRate),
+      course_ids: selectedCourseIds,
     };
 
     if (password && password.trim().length > 0) {
@@ -128,11 +138,11 @@ export default function TeachersManagePage() {
         setIsModalOpen(false);
         setSuccessMsg(
           editingTeacher
-            ? locale === 'ar' ? 'تم تحديث حساب الأستاذ بنجاح' : 'Compte enseignant mis à jour avec succès'
-            : locale === 'ar' ? 'تم إنشاء حساب الأستاذ بنجاح وتفعيل وصوله للبوابة' : 'Compte enseignant créé avec succès ! Accès activé.'
+            ? locale === 'ar' ? 'تم تحديث حساب الأستاذ والدورات المسندة بنجاح' : 'Compte enseignant et cours assignés mis à jour avec succès'
+            : locale === 'ar' ? 'تم إنشاء حساب الأستاذ وإسناد الدورات بنجاح' : 'Compte enseignant créé et cours assignés avec succès !'
         );
         setTimeout(() => setSuccessMsg(''), 4500);
-        loadTeachers();
+        loadData();
       } else {
         setError(data.error || 'Erreur lors de l\'enregistrement');
       }
@@ -311,9 +321,35 @@ export default function TeachersManagePage() {
                     </span>
                   </td>
                   <td>
-                    <span className="badge badge-secondary">
-                      {tch.courses?.length || 0} {locale === 'ar' ? 'دورات' : 'cours'}
-                    </span>
+                    {tch.courses && tch.courses.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', maxWidth: '340px' }}>
+                        {tch.courses.map((c: any) => (
+                          <div
+                            key={c.id}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.4rem',
+                              background: '#FFF0EB',
+                              border: '1px solid rgba(250, 70, 29, 0.2)',
+                              color: 'var(--primary)',
+                              padding: '0.25rem 0.55rem',
+                              borderRadius: '6px',
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              lineHeight: 1.3,
+                            }}
+                          >
+                            <BookOpen size={12} color="var(--primary)" style={{ flexShrink: 0 }} />
+                            <span>{locale === 'ar' ? c.title_ar : c.title_fr}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                        {locale === 'ar' ? 'لم يُعيّن لأي دورة بعد' : 'Aucun cours assigné'}
+                      </span>
+                    )}
                   </td>
                   <td>
                     <span style={{ fontWeight: 800, fontSize: '0.88rem' }}>
@@ -505,6 +541,67 @@ export default function TeachersManagePage() {
                       className="form-input"
                     />
                   </div>
+                </div>
+
+                {/* Assigned Courses Section */}
+                <div className="form-group" style={{ background: '#F8FAFC', padding: '1rem', borderRadius: '10px', border: '1px solid #E2E8F0' }}>
+                  <label className="form-label" style={{ fontWeight: 800, marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--dark-brown)' }}>
+                    <BookOpen size={16} color="var(--primary)" />
+                    <span>{locale === 'ar' ? 'الدورات المسندة لهذا الأستاذ' : 'Formations enseignées par ce formateur'}</span>
+                  </label>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '0 0 0.75rem 0', lineHeight: 1.4 }}>
+                    {locale === 'ar'
+                      ? 'حدد الدورات التدريبية التي يشرف عليها هذا الأستاذ ليتمكن من متابعة طلابها وتسجيل الحضور:'
+                      : 'Cochez les cours que cet enseignant dispense afin qu\'il puisse gérer ses listes d\'élèves et faire l\'appel :'}
+                  </p>
+                  
+                  {availableCourses.length === 0 ? (
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{locale === 'ar' ? 'لا توجد دورات مسجلة' : 'Aucun cours disponible'}</span>
+                  ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.5rem', maxHeight: '180px', overflowY: 'auto', padding: '0.2rem' }}>
+                      {availableCourses.map((crs: any) => {
+                        const isChecked = selectedCourseIds.includes(crs.id);
+                        return (
+                          <label
+                            key={crs.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.55rem',
+                              padding: '0.45rem 0.65rem',
+                              borderRadius: '8px',
+                              background: isChecked ? '#FFF0EB' : '#FFFFFF',
+                              border: isChecked ? '1.5px solid var(--primary)' : '1px solid #E2E8F0',
+                              cursor: 'pointer',
+                              fontSize: '0.82rem',
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedCourseIds([...selectedCourseIds, crs.id]);
+                                } else {
+                                  setSelectedCourseIds(selectedCourseIds.filter((id) => id !== crs.id));
+                                }
+                              }}
+                              style={{ accentColor: 'var(--primary)', width: '15px', height: '15px' }}
+                            />
+                            <div style={{ lineHeight: 1.25 }}>
+                              <span style={{ fontWeight: isChecked ? 800 : 600, color: isChecked ? 'var(--primary)' : 'var(--dark-brown)', display: 'block' }}>
+                                {locale === 'ar' ? crs.title_ar : crs.title_fr}
+                              </span>
+                              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                                {crs.language_name_fr} • {crs.level}
+                              </span>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 <div className="form-group">
