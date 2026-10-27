@@ -70,9 +70,9 @@ export function Navbar() {
   }, []);
 
   const languagesList: { code: Locale; label: string; flag: string; native: string; subtitle: string }[] = [
-    { code: 'ar', label: 'العربية', flag: '🇩🇿', native: 'العربية', subtitle: 'الجزائر (RTL)' },
-    { code: 'fr', label: 'Français', flag: '🇫🇷', native: 'Français', subtitle: 'International (LTR)' },
     { code: 'en', label: 'English', flag: '🇬🇧', native: 'English', subtitle: 'Global (LTR)' },
+    { code: 'fr', label: 'Français', flag: '🇫🇷', native: 'Français', subtitle: 'International (LTR)' },
+    { code: 'ar', label: 'العربية', flag: '🇩🇿', native: 'العربية', subtitle: 'الجزائر (RTL)' },
   ];
 
   const currentLang = languagesList.find((l) => l.code === locale) || languagesList[0];

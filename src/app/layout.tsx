@@ -6,12 +6,12 @@ import { BrandProtection } from '@/components/BrandProtection';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  title: 'Fassi7 (فصيح) — Learning That Fits Your Life | أكاديمية تعليم اللغات',
-  description: 'أكاديمية فصيح لتعليم اللغات الأجنبية (الإنجليزية، الفرنسية، الألمانية، الإسبانية، التركية) والتحضير لشهادات IELTS و TCF و Goethe بأحدث المناهج التفاعلية التي تتكيف مع نمط حياتك.',
-  keywords: ['Fassi7', 'فصيح', 'Learning That Fits Your Life', 'Multilinguo', 'تعليم اللغات', 'IELTS الجزائر', 'TCF Canada الجزائر', 'Goethe Allemand', 'تعلم الإنجليزية الجزائر'],
+  title: 'Fassi7 School — Learning That Fits Your Life | Foreign Language Academy (فصيح)',
+  description: 'Fassi7 Language Academy — Learn English, French, German, Spanish, Turkish, and prepare for IELTS, TCF Canada, and Goethe certifications with flexible learning tailored to your lifestyle.',
+  keywords: ['Fassi7', 'Fassi7 School', 'Learning That Fits Your Life', 'Language Academy', 'Learn English Algeria', 'IELTS Algeria', 'TCF Canada', 'Goethe Deutsch', 'فصيح'],
   openGraph: {
-    title: 'Fassi7 (فصيح) — Learning That Fits Your Life',
-    description: 'De Multilinguo à Fassi7 : Une expérience d\'apprentissage linguistique flexible qui s\'adapte à votre vie.',
+    title: 'Fassi7 School — Learning That Fits Your Life',
+    description: 'A flexible, modern language learning experience that adapts to your lifestyle and goals.',
     images: ['/images/Position 02.jpg.jpeg'],
     type: 'website',
   },

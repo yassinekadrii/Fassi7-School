@@ -21,14 +21,17 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>('en');
 
   useEffect(() => {
-    // Check saved preference in localStorage
-    const saved = localStorage.getItem('fassi7_locale') as Locale | null;
-    if (saved && (saved === 'ar' || saved === 'fr' || saved === 'en')) {
-      setLocaleState(saved);
-      document.documentElement.lang = saved;
-      document.documentElement.dir = saved === 'ar' ? 'rtl' : 'ltr';
+    // Only switch language if user explicitly chose one using the language selector
+    const explicitlyChosen = localStorage.getItem('fassi7_user_lang') as Locale | null;
+    if (explicitlyChosen && (explicitlyChosen === 'ar' || explicitlyChosen === 'fr' || explicitlyChosen === 'en')) {
+      setLocaleState(explicitlyChosen);
+      document.documentElement.lang = explicitlyChosen;
+      document.documentElement.dir = explicitlyChosen === 'ar' ? 'rtl' : 'ltr';
     } else {
+      // Default to English first when opening the website
       setLocaleState('en');
+      localStorage.setItem('fassi7_user_lang', 'en');
+      localStorage.setItem('fassi7_locale', 'en');
       document.documentElement.lang = 'en';
       document.documentElement.dir = 'ltr';
     }
@@ -36,6 +39,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
+    localStorage.setItem('fassi7_user_lang', newLocale);
     localStorage.setItem('fassi7_locale', newLocale);
     document.documentElement.lang = newLocale;
     document.documentElement.dir = newLocale === 'ar' ? 'rtl' : 'ltr';
