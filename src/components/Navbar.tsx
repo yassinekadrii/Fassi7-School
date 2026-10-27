@@ -126,6 +126,18 @@ export function Navbar() {
           color: 'var(--secondary)',
           bg: 'var(--secondary-light)',
         };
+      case 'teacher':
+        return {
+          label: locale === 'ar' ? 'أستاذ معتمد' : locale === 'en' ? 'Certified Teacher' : 'Enseignant',
+          color: '#059669',
+          bg: '#ECFDF5',
+        };
+      case 'student':
+        return {
+          label: locale === 'ar' ? 'طالب' : locale === 'en' ? 'Student' : 'Étudiant',
+          color: 'var(--info)',
+          bg: 'var(--info-light)',
+        };
       default:
         return { label: role, color: 'var(--text-muted)', bg: 'var(--bg-warm)' };
     }
@@ -456,6 +468,47 @@ export function Navbar() {
 
                     {/* Quick navigation links */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                      {user.role === 'teacher' ? (
+                        <Link
+                          href="/portal/teacher"
+                          onClick={() => setUserDropdownOpen(false)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.6rem',
+                            padding: '0.55rem 0.75rem',
+                            borderRadius: 'var(--radius-sm)',
+                            color: 'var(--dark-brown)',
+                            fontSize: '0.88rem',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                          }}
+                          className="dropdown-hover-item"
+                        >
+                          <GraduationCap size={15} color="var(--primary)" />
+                          <span>{locale === 'ar' ? 'فضاء الأستاذ (تسجيل الحضور)' : locale === 'en' ? 'Teacher Portal (Attendance)' : 'Espace Enseignant (Présences)'}</span>
+                        </Link>
+                      ) : user.role === 'student' ? (
+                        <Link
+                          href="/portal/student"
+                          onClick={() => setUserDropdownOpen(false)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.6rem',
+                            padding: '0.55rem 0.75rem',
+                            borderRadius: 'var(--radius-sm)',
+                            color: 'var(--dark-brown)',
+                            fontSize: '0.88rem',
+                            fontWeight: 700,
+                            textDecoration: 'none',
+                          }}
+                          className="dropdown-hover-item"
+                        >
+                          <BookOpen size={15} color="var(--primary)" />
+                          <span>{locale === 'ar' ? 'فضاء الطالب' : locale === 'en' ? 'Student Portal' : 'Espace Étudiant'}</span>
+                        </Link>
+                      ) : (
                         <>
                           <Link
                             href="/dashboard"
@@ -536,6 +589,7 @@ export function Navbar() {
                             <span>{t('admin_payments')}</span>
                           </Link>
                         </>
+                      )}
 
                       <div style={{ borderTop: '1px solid var(--border)', marginTop: '0.4rem', paddingTop: '0.4rem' }}>
                         <button
@@ -568,7 +622,30 @@ export function Navbar() {
                   </div>
                 )}
               </div>
-            ) : null}
+            ) : (
+              <Link
+                href="/admin-portal"
+                className="btn-outline btn-sm"
+                style={{
+                  borderRadius: 'var(--radius-full)',
+                  gap: '0.35rem',
+                  padding: '0.42rem 0.85rem',
+                  fontSize: '0.84rem',
+                  fontWeight: 700,
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                  border: '1.5px solid var(--border)',
+                  backgroundColor: '#FFFFFF',
+                  color: 'var(--dark-brown)',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                }}
+              >
+                <LogIn size={14} color="var(--primary)" />
+                <span>{locale === 'ar' ? 'تسجيل الدخول' : locale === 'en' ? 'Log In' : 'Connexion'}</span>
+              </Link>
+            )}
 
             {/* Standalone Conversion CTA: Register Now */}
             <button
@@ -671,12 +748,12 @@ export function Navbar() {
                 </div>
 
                   <Link
-                    href="/dashboard"
+                    href={user.role === 'teacher' ? '/portal/teacher' : user.role === 'student' ? '/portal/student' : '/dashboard'}
                     onClick={() => setMobileMenuOpen(false)}
                     className="btn-primary btn-sm"
                     style={{ fontSize: '0.78rem', padding: '0.4rem 0.75rem' }}
                   >
-                    {t('nav_dashboard')}
+                    {user.role === 'teacher' ? (locale === 'ar' ? 'فضاء الأستاذ' : 'Espace Prof') : t('nav_dashboard')}
                   </Link>
               </div>
             )}
@@ -800,6 +877,30 @@ export function Navbar() {
                 <MessageSquare size={16} />
                 <span>WhatsApp (+213 550 12 34 56)</span>
               </a>
+
+              {!user && (
+                <Link
+                  href="/admin-portal"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="btn-outline"
+                  style={{
+                    width: '100%',
+                    justifyContent: 'center',
+                    padding: '0.8rem',
+                    gap: '0.5rem',
+                    textDecoration: 'none',
+                    fontWeight: 700,
+                    color: 'var(--dark-brown)',
+                    border: '1.5px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <LogIn size={16} color="var(--primary)" />
+                  <span>{locale === 'ar' ? 'تسجيل الدخول (إدارة وأساتذة)' : locale === 'en' ? 'Sign In (Teachers & Staff)' : 'Connexion (Enseignants & Équipe)'}</span>
+                </Link>
+              )}
 
               {user ? (
                 <button
