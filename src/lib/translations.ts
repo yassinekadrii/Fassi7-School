@@ -97,6 +97,16 @@ export const translations: Translations = {
     fr: 'Déconnexion',
     en: 'Sign Out',
   },
+  admin_schedule: {
+    ar: 'الجدول والحصص',
+    fr: 'Planning des Cours',
+    en: 'Class Schedule',
+  },
+  admin_payments: {
+    ar: 'المدفوعات والمحاسبة',
+    fr: 'Paiements & Trésorerie',
+    en: 'Payments & Treasury',
+  },
 
   // Heritage banner
   heritage_badge: {

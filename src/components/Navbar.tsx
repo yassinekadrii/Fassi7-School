@@ -567,7 +567,7 @@ export function Navbar() {
                             className="dropdown-hover-item"
                           >
                             <Calendar size={15} color="var(--secondary)" />
-                            <span>{t('admin_schedule')}</span>
+                            <span>{locale === 'ar' ? 'الجدول والحصص' : locale === 'en' ? 'Class Schedule' : 'Planning des Cours'}</span>
                           </Link>
                           <Link
                             href="/dashboard/payments"
@@ -586,7 +586,7 @@ export function Navbar() {
                             className="dropdown-hover-item"
                           >
                             <Receipt size={15} color="var(--primary)" />
-                            <span>{t('admin_payments')}</span>
+                            <span>{locale === 'ar' ? 'المدفوعات والمحاسبة' : locale === 'en' ? 'Payments & Treasury' : 'Paiements & Trésorerie'}</span>
                           </Link>
                         </>
                       )}
