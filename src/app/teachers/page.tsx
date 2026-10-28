@@ -6,6 +6,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { useLanguage } from '@/context/LanguageContext';
 import { GraduationCap, Award, BookOpen, Clock, CheckCircle } from 'lucide-react';
+import { getLocalizedTeacherBio, getLocalizedTeacherQuals, getLocalizedTeacherSpecialties } from '@/lib/courseHelpers';
 
 export default function TeachersPage() {
   const { t, locale } = useLanguage();
@@ -54,7 +55,7 @@ export default function TeachersPage() {
         <div className="container">
           {loading ? (
             <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-muted)' }}>
-              {locale === 'ar' ? 'جاري التحميل...' : 'Chargement...'}
+              {locale === 'ar' ? 'جاري التحميل...' : locale === 'en' ? 'Loading teachers...' : 'Chargement...'}
             </div>
           ) : (
             <div
@@ -110,14 +111,14 @@ export default function TeachersPage() {
                             marginTop: '0.2rem',
                           }}
                         >
-                          {locale === 'ar' ? teacher.qualifications_ar : teacher.qualifications_fr}
+                          {getLocalizedTeacherQuals(teacher, locale)}
                         </span>
                       </div>
                     </div>
 
                     {/* Bio */}
                     <p style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: '1.7', marginBottom: '1.5rem' }}>
-                      {locale === 'ar' ? teacher.bio_ar : teacher.bio_fr}
+                      {getLocalizedTeacherBio(teacher, locale)}
                     </p>
 
                     {/* Specialties box */}
@@ -134,7 +135,7 @@ export default function TeachersPage() {
                         {locale === 'ar' ? 'التخصصات الأساسية:' : locale === 'en' ? 'Core Specialties:' : 'Spécialités :'}
                       </div>
                       <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                        {locale === 'ar' ? teacher.specialties_ar : teacher.specialties_fr}
+                        {getLocalizedTeacherSpecialties(teacher, locale)}
                       </p>
                     </div>
 

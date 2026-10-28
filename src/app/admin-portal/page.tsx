@@ -103,7 +103,7 @@ export default function AdminPortalPage() {
             }}
           >
             <Shield size={14} />
-            <span>{locale === 'ar' ? 'بوابة الدخول المعتمدة' : 'Portail d\'Accès Sécurisé'}</span>
+            <span>{locale === 'ar' ? 'بوابة الدخول المعتمدة' : locale === 'en' ? 'Certified Access Portal' : 'Portail d\'Accès Sécurisé'}</span>
           </div>
 
           <h1 style={{ fontSize: '1.75rem', fontWeight: 900, marginBottom: '0.5rem', color: 'var(--dark-brown)' }}>
@@ -142,7 +142,7 @@ export default function AdminPortalPage() {
         <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
           <div className="form-group" style={{ marginBottom: '1.25rem' }}>
             <label className="form-label" style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.4rem', display: 'block' }}>
-              {locale === 'ar' ? 'البريد الإلكتروني المهني' : 'Adresse Email Professionnelle'}
+              {locale === 'ar' ? 'البريد الإلكتروني المهني' : locale === 'en' ? 'Professional Email' : 'Adresse Email Professionnelle'}
             </label>
             <div style={{ position: 'relative' }}>
               <input
@@ -176,7 +176,7 @@ export default function AdminPortalPage() {
 
           <div className="form-group" style={{ marginBottom: '1.5rem' }}>
             <label className="form-label" style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.4rem', display: 'block' }}>
-              {locale === 'ar' ? 'كلمة المرور' : 'Mot de passe'}
+              {locale === 'ar' ? 'كلمة المرور' : locale === 'en' ? 'Password' : 'Mot de passe'}
             </label>
             <div style={{ position: 'relative' }}>
               <input
@@ -238,7 +238,7 @@ export default function AdminPortalPage() {
             }}
           >
             <LogIn size={18} />
-            <span>{loading ? '...' : locale === 'ar' ? 'دخول لوحة التحكم' : 'Accéder au Dashboard'}</span>
+            <span>{loading ? '...' : locale === 'ar' ? 'دخول لوحة التحكم' : locale === 'en' ? 'Access Dashboard' : 'Accéder au Dashboard'}</span>
           </button>
         </form>
 
@@ -257,6 +257,8 @@ export default function AdminPortalPage() {
           >
             {locale === 'ar'
               ? '⚡ تجربة فورية للحسابات (1-Click Demo)'
+              : locale === 'en'
+              ? '⚡ Instant Demo Access (1-Click)'
               : '⚡ Accès Rapide Démo (1-Click)'}
           </p>
 
@@ -278,10 +280,10 @@ export default function AdminPortalPage() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800, color: 'var(--primary)' }}>
                 <Shield size={15} />
-                <span>Super Admin</span>
+                <span>{locale === 'ar' ? 'المدير العام' : 'Super Admin'}</span>
               </div>
               <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                {locale === 'ar' ? 'المدير العام' : 'Directeur'}
+                {locale === 'ar' ? 'المالك' : locale === 'en' ? 'Owner / Director' : 'Directeur'}
               </span>
             </button>
 
@@ -302,10 +304,10 @@ export default function AdminPortalPage() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800, color: 'var(--dark-brown)' }}>
                 <UserCheck size={15} color="var(--secondary)" />
-                <span>Secrétariat</span>
+                <span>{locale === 'ar' ? 'السكرتارية' : locale === 'en' ? 'Secretary' : 'Secrétariat'}</span>
               </div>
               <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                {locale === 'ar' ? 'السكرتارية' : 'Secrétaire'}
+                {locale === 'ar' ? 'المكتب' : locale === 'en' ? 'Front Desk' : 'Secrétaire'}
               </span>
             </button>
 
@@ -326,10 +328,10 @@ export default function AdminPortalPage() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 800, color: '#059669' }}>
                 <GraduationCap size={15} color="#10B981" />
-                <span>Enseignant</span>
+                <span>{locale === 'ar' ? 'أستاذ' : locale === 'en' ? 'Teacher' : 'Enseignant'}</span>
               </div>
               <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                {locale === 'ar' ? 'أستاذ (Présences)' : 'Professeur'}
+                {locale === 'ar' ? 'تسجيل الحضور' : locale === 'en' ? 'Roll Call / Matrix' : 'Professeur'}
               </span>
             </button>
           </div>
@@ -349,7 +351,7 @@ export default function AdminPortalPage() {
             }}
           >
             {dir === 'rtl' ? <ArrowRight size={15} /> : <ArrowLeft size={15} />}
-            <span>{locale === 'ar' ? 'العودة إلى الموقع العام' : 'Retour au site public'}</span>
+            <span>{locale === 'ar' ? 'العودة إلى الموقع العام' : locale === 'en' ? 'Back to public website' : 'Retour au site public'}</span>
           </Link>
         </div>
       </div>

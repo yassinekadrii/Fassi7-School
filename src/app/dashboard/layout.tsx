@@ -56,7 +56,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ fontWeight: 700, color: 'var(--primary)' }}>Chargement / جاري التحميل...</p>
+        <p style={{ fontWeight: 700, color: 'var(--primary)' }}>
+          {locale === 'ar' ? 'جاري التحميل...' : locale === 'en' ? 'Loading portal...' : 'Chargement...'}
+        </p>
       </div>
     );
   }
@@ -96,8 +98,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <span className="badge badge-primary" style={{ fontSize: '0.72rem', padding: '0.15rem 0.5rem' }}>
                   <Shield size={10} />
                   {user.role === 'super_admin'
-                    ? (locale === 'ar' ? 'المالك (Super Admin)' : 'Propriétaire (Owner)')
-                    : (locale === 'ar' ? 'السكرتارية (Admin)' : 'Secrétaire (Admin)')}
+                    ? (locale === 'ar' ? 'المالك (Super Admin)' : locale === 'en' ? 'Owner (Super Admin)' : 'Propriétaire (Owner)')
+                    : (locale === 'ar' ? 'السكرتارية (Admin)' : locale === 'en' ? 'Secretary (Admin)' : 'Secrétaire (Admin)')}
                 </span>
               </div>
             </div>
@@ -131,7 +133,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             style={{ margin: 0, color: 'var(--primary)' }}
           >
             <ExternalLink size={17} />
-            <span>{locale === 'ar' ? 'عرض الموقع العام' : 'Voir le site public'}</span>
+            <span>{locale === 'ar' ? 'عرض الموقع العام' : locale === 'en' ? 'View Public Website' : 'Voir le site public'}</span>
           </Link>
           <button
             onClick={logout}

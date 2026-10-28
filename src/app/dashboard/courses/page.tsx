@@ -96,7 +96,7 @@ export default function CoursesManagePage() {
   };
 
   const handleDuplicate = async (courseId: number) => {
-    if (!confirm(locale === 'ar' ? 'هل تريد استنساخ هذه الدورة لإنشاء فوج جديد سريعاً؟' : 'Dupliquer ce cours pour créer une nouvelle session ?')) {
+    if (!confirm(locale === 'ar' ? 'هل تريد استنساخ هذه الدورة لإنشاء فوج جديد سريعاً؟' : locale === 'en' ? 'Duplicate this course to quickly launch a new cohort?' : 'Dupliquer ce cours pour créer une nouvelle session ?')) {
       return;
     }
 
@@ -166,13 +166,15 @@ export default function CoursesManagePage() {
           <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             {locale === 'ar'
               ? 'إدارة البرامج التدريبية، الأسعار، تعيين الأساتذة واستنساخ الأفواج'
+              : locale === 'en'
+              ? 'Course management, tuition pricing, faculty assignment and cohort duplication'
               : 'Gestion des formations, tarification, formateurs et duplication'}
           </p>
         </div>
 
         <button onClick={openAddModal} className="btn-primary btn-sm">
           <Plus size={16} />
-          <span>{locale === 'ar' ? 'إضافة دورة جديدة' : 'Nouveau cours'}</span>
+          <span>{locale === 'ar' ? 'إضافة دورة جديدة' : locale === 'en' ? '+ New Course' : 'Nouveau cours'}</span>
         </button>
       </div>
 
@@ -181,12 +183,12 @@ export default function CoursesManagePage() {
           <table className="table">
             <thead>
               <tr>
-                <th>{locale === 'ar' ? 'الدورة واللغة' : 'Formation & Langue'}</th>
-                <th>{locale === 'ar' ? 'المستوى والصيغة' : 'Niveau & Format'}</th>
-                <th>{locale === 'ar' ? 'الرسوم' : 'Tarif'}</th>
-                <th>{locale === 'ar' ? 'الأستاذ المشرف' : 'Enseignant responsable'}</th>
-                <th>{locale === 'ar' ? 'التسجيلات' : 'Inscrits'}</th>
-                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'إجراءات' : 'Actions'}</th>
+                <th>{locale === 'ar' ? 'الدورة واللغة' : locale === 'en' ? 'Course & Language' : 'Formation & Langue'}</th>
+                <th>{locale === 'ar' ? 'المستوى والصيغة' : locale === 'en' ? 'Level & Format' : 'Niveau & Format'}</th>
+                <th>{locale === 'ar' ? 'الرسوم' : locale === 'en' ? 'Tuition (DZD)' : 'Tarif'}</th>
+                <th>{locale === 'ar' ? 'الأستاذ المشرف' : locale === 'en' ? 'Faculty Lead' : 'Enseignant responsable'}</th>
+                <th>{locale === 'ar' ? 'التسجيلات' : locale === 'en' ? 'Enrolled / Capacity' : 'Inscrits'}</th>
+                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'إجراءات' : locale === 'en' ? 'Actions' : 'Actions'}</th>
               </tr>
             </thead>
             <tbody>
@@ -201,10 +203,10 @@ export default function CoursesManagePage() {
                         </span>
                       </div>
                       <p style={{ margin: 0, fontWeight: 800, fontSize: '0.92rem', color: 'var(--dark-brown)' }}>
-                        {locale === 'ar' ? course.title_ar : course.title_fr}
+                        {locale === 'ar' ? (course.title_ar || course.title_fr) : locale === 'en' ? (course.title_en || course.title_fr) : course.title_fr}
                       </p>
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                        {course.duration_weeks} sem • {course.hours_total}h
+                        {course.duration_weeks ? `${course.duration_weeks} ${locale === 'ar' ? 'أسابيع' : locale === 'en' ? 'wks' : 'sem'}` : ''} • {course.hours_total}h
                       </span>
                     </div>
                   </td>
@@ -248,7 +250,7 @@ export default function CoursesManagePage() {
                       </div>
                     ) : (
                       <span className="badge badge-secondary" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                        {locale === 'ar' ? 'غير معين' : 'Non assigné'}
+                        {locale === 'ar' ? 'غير معين' : locale === 'en' ? 'Unassigned' : 'Non assigné'}
                       </span>
                     )}
                   </td>
@@ -272,7 +274,7 @@ export default function CoursesManagePage() {
                         onClick={() => handleDuplicate(course.id)}
                         className="btn-outline btn-sm"
                         style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem', color: 'var(--primary)' }}
-                        title={locale === 'ar' ? 'استنساخ الدورة' : 'Dupliquer le cours'}
+                        title={locale === 'ar' ? 'استنساخ الدورة' : locale === 'en' ? 'Duplicate Course' : 'Dupliquer le cours'}
                       >
                         <Copy size={13} />
                       </button>
@@ -292,8 +294,8 @@ export default function CoursesManagePage() {
             <div className="modal-header">
               <h3 style={{ fontSize: '1.25rem', margin: 0 }}>
                 {editingCourse
-                  ? locale === 'ar' ? 'تعديل بيانات الدورة' : 'Modifier la formation'
-                  : locale === 'ar' ? 'إضافة دورة تدريبية جديدة' : 'Créer une formation'}
+                  ? (locale === 'ar' ? 'تعديل بيانات الدورة' : locale === 'en' ? 'Edit Course Program' : 'Modifier la formation')
+                  : (locale === 'ar' ? 'إضافة دورة تدريبية جديدة' : locale === 'en' ? 'Create New Course' : 'Créer une formation')}
               </h3>
               <button onClick={() => setIsModalOpen(false)} style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
@@ -310,7 +312,7 @@ export default function CoursesManagePage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'لغة التدريس' : 'Langue'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'لغة التدريس' : locale === 'en' ? 'Instruction Language' : 'Langue'} *</label>
                     <select
                       value={languageId}
                       onChange={(e) => setLanguageId(e.target.value)}
@@ -319,14 +321,14 @@ export default function CoursesManagePage() {
                     >
                       {languages.map((l) => (
                         <option key={l.id} value={l.id}>
-                          {l.flag_emoji} {l.name_fr} ({l.name_ar})
+                          {l.flag_emoji} {locale === 'ar' ? l.name_ar : locale === 'en' ? (l.name_en || l.name_fr) : l.name_fr}
                         </option>
                       ))}
                     </select>
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'المستوى' : 'Niveau'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'المستوى' : locale === 'en' ? 'Target Level' : 'Niveau'} *</label>
                     <input
                       type="text"
                       required
@@ -340,7 +342,7 @@ export default function CoursesManagePage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'العنوان بالعربية' : 'Titre en Arabe'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'العنوان بالعربية' : locale === 'en' ? 'Title (Arabic)' : 'Titre en Arabe'} *</label>
                     <input
                       type="text"
                       required
@@ -351,7 +353,7 @@ export default function CoursesManagePage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'العنوان بالفرنسية' : 'Titre en Français'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'العنوان بالفرنسية' : locale === 'en' ? 'Title (French / Latin)' : 'Titre en Français'} *</label>
                     <input
                       type="text"
                       required
@@ -365,7 +367,7 @@ export default function CoursesManagePage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.85rem' }}>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'السعر (دج)' : 'Prix (DZD)'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'السعر (دج)' : locale === 'en' ? 'Price (DZD)' : 'Prix (DZD)'} *</label>
                     <input
                       type="number"
                       required
@@ -375,7 +377,7 @@ export default function CoursesManagePage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'المدة (أسابيع)' : 'Durée (sem)'}</label>
+                    <label className="form-label">{locale === 'ar' ? 'المدة (أسابيع)' : locale === 'en' ? 'Duration (weeks)' : 'Durée (sem)'}</label>
                     <input
                       type="number"
                       value={durationWeeks}
@@ -384,7 +386,7 @@ export default function CoursesManagePage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'الساعات' : 'Heures'}</label>
+                    <label className="form-label">{locale === 'ar' ? 'الساعات' : locale === 'en' ? 'Total Hours' : 'Heures'}</label>
                     <input
                       type="number"
                       value={hoursTotal}
@@ -393,7 +395,7 @@ export default function CoursesManagePage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'السعة' : 'Capacité'}</label>
+                    <label className="form-label">{locale === 'ar' ? 'السعة' : locale === 'en' ? 'Capacity' : 'Capacité'}</label>
                     <input
                       type="number"
                       value={maxCapacity}
@@ -405,13 +407,13 @@ export default function CoursesManagePage() {
 
                 {/* Assign Teacher */}
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'تعيين أستاذ مشرف' : 'Assigner un Formateur'}</label>
+                  <label className="form-label">{locale === 'ar' ? 'تعيين أستاذ مشرف' : locale === 'en' ? 'Assign Lead Faculty' : 'Assigner un Formateur'}</label>
                   <select
                     value={selectedTeachers[0] || ''}
                     onChange={(e) => setSelectedTeachers(e.target.value ? [Number(e.target.value)] : [])}
                     className="form-select"
                   >
-                    <option value="">{locale === 'ar' ? '-- بدون تعيين --' : '-- Aucun --'}</option>
+                    <option value="">{locale === 'ar' ? '-- بدون تعيين --' : locale === 'en' ? '-- None --' : '-- Aucun --'}</option>
                     {teachers.map((t) => (
                       <option key={t.id} value={t.id}>
                         {t.name} ({t.qualifications_fr})
@@ -421,7 +423,7 @@ export default function CoursesManagePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'الوصف بالعربية' : 'Description en Arabe'}</label>
+                  <label className="form-label">{locale === 'ar' ? 'الوصف بالعربية' : locale === 'en' ? 'Description (Arabic)' : 'Description en Arabe'}</label>
                   <textarea
                     rows={2}
                     value={descAr}
@@ -431,7 +433,7 @@ export default function CoursesManagePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'الوصف بالفرنسية' : 'Description en Français'}</label>
+                  <label className="form-label">{locale === 'ar' ? 'الوصف بالفرنسية' : locale === 'en' ? 'Description (French)' : 'Description en Français'}</label>
                   <textarea
                     rows={2}
                     value={descFr}

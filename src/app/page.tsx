@@ -28,7 +28,6 @@ export default function HomePage() {
   const { t, locale, dir } = useLanguage();
   const [courses, setCourses] = useState<any[]>([]);
   const [languages, setLanguages] = useState<any[]>([]);
-  const [teachers, setTeachers] = useState<any[]>([]);
   const [selectedLangFilter, setSelectedLangFilter] = useState<number | 'all'>('all');
   const [loading, setLoading] = useState(true);
   const [selectedCourseForEnroll, setSelectedCourseForEnroll] = useState<any>(null);
@@ -38,17 +37,14 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [cRes, lRes, tRes] = await Promise.all([
+        const [cRes, lRes] = await Promise.all([
           fetch('/api/courses?published_only=true'),
           fetch('/api/languages?published_only=true'),
-          fetch('/api/teachers'),
         ]);
         const cData = await cRes.json();
         const lData = await lRes.json();
-        const tData = await tRes.json();
         setCourses(cData.courses || []);
         setLanguages(lData.languages || []);
-        setTeachers(tData.teachers || []);
       } catch (err) {
         console.error('Error fetching home data:', err);
       } finally {
@@ -564,15 +560,17 @@ export default function HomePage() {
                 <Play size={28} />
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--dark-brown)' }}>
-                {locale === 'ar' ? 'دروس مسجلة (Recorded)' : 'Recorded Lessons'}
+                {locale === 'ar' ? 'دروس مسجلة (À la demande)' : locale === 'en' ? 'Recorded Lessons (Self-Paced)' : 'Cours Enregistrés (À la demande)'}
               </h3>
               <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '1.25rem' }}>
                 {locale === 'ar'
                   ? 'محتوى مرئي عالي الجودة يمكنك مراجعته بالوتيرة التي تناسبك وفي أي وقت ومن أي جهاز.'
-                  : 'High-quality on-demand modules you can study and replay anytime, anywhere at your own pace.'}
+                  : locale === 'en'
+                  ? 'High-quality on-demand modules you can study and replay anytime, anywhere at your own pace.'
+                  : 'Modules vidéo en haute définition accessibles 24/7 pour réviser à votre propre rythme depuis n\'importe quel appareil.'}
               </p>
               <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FFAD17', backgroundColor: '#FFF8E7', padding: '4px 12px', borderRadius: '999px' }}>
-                {locale === 'ar' ? 'حرية مطلقة في الوقت' : 'Self-Paced Flexibility'}
+                {locale === 'ar' ? 'حرية مطلقة في الوقت' : locale === 'en' ? 'Self-Paced Flexibility' : 'Flexibilité Totale'}
               </span>
             </div>
 
@@ -602,15 +600,17 @@ export default function HomePage() {
                 <Users size={28} />
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--dark-brown)' }}>
-                {locale === 'ar' ? 'تعليم فردي (One-on-One)' : 'One-on-One Learning'}
+                {locale === 'ar' ? 'تعليم فردي (One-on-One)' : locale === 'en' ? 'One-on-One Learning' : 'Cours Particuliers (1-sur-1)'}
               </h3>
               <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '1.25rem' }}>
                 {locale === 'ar'
                   ? 'جلسات خاصة مكرسة لك بالكامل مع أستاذ خبير يركز على احتياجاتك ونقاط قوتك الفردية.'
-                  : 'Private coaching tailored 100% to your personal career needs, target certification, or schedule.'}
+                  : locale === 'en'
+                  ? 'Private coaching tailored 100% to your personal career needs, target certification, or schedule.'
+                  : 'Séances individuelles sur-mesure avec un enseignant dédié pour cibler vos objectifs professionnels ou d\'examen.'}
               </p>
               <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#FA491F', backgroundColor: '#FFF0EB', padding: '4px 12px', borderRadius: '999px' }}>
-                {locale === 'ar' ? 'تركيز وتخصيص كامل' : '100% Personalized'}
+                {locale === 'ar' ? 'تركيز وتخصيص كامل' : locale === 'en' ? '100% Personalized' : '100% Personnalisé'}
               </span>
             </div>
 
@@ -640,15 +640,17 @@ export default function HomePage() {
                 <GraduationCap size={28} />
               </div>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--dark-brown)' }}>
-                {locale === 'ar' ? 'دروس جماعية (Online Lessons)' : 'Interactive Online Classes'}
+                {locale === 'ar' ? 'دروس جماعية (Online Lessons)' : locale === 'en' ? 'Interactive Online Classes' : 'Classes Virtuelles Collectives'}
               </h3>
               <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '1.25rem' }}>
                 {locale === 'ar'
                   ? 'فصول افتراضية تفاعلية مصغرة مع زملاء يشاركونك نفس المستوى لممارسة التحدث الحي والمناقشة.'
-                  : 'Dynamic small-group virtual cohorts fostering lively group discussions and peer learning.'}
+                  : locale === 'en'
+                  ? 'Dynamic small-group virtual cohorts fostering lively group discussions and peer learning.'
+                  : 'Classes virtuelles en petits groupes conviviaux pour pratiquer l\'expression orale en immersion totale.'}
               </p>
               <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--dark-brown)', backgroundColor: '#F6F3EE', padding: '4px 12px', borderRadius: '999px' }}>
-                {locale === 'ar' ? 'تفاعل حي ومحادثة' : 'Live Group Interaction'}
+                {locale === 'ar' ? 'تفاعل حي ومحادثة' : locale === 'en' ? 'Live Group Interaction' : 'Interaction & Débat'}
               </span>
             </div>
           </div>
@@ -735,12 +737,14 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.05rem', color: 'var(--dark-brown)' }}>
-                      {locale === 'ar' ? 'المستوى المبتدئ (Beginner)' : 'Beginner Level'}
+                      {locale === 'ar' ? 'المستوى المبتدئ (Beginner)' : locale === 'en' ? 'Beginner Level' : 'Niveau Débutant'}
                     </h4>
                     <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
                       {locale === 'ar'
                         ? 'كسر حاجز الخوف، النطق السليم للحروف والكلمات، وإجراء المحادثات اليومية الأساسية.'
-                        : 'Overcoming hesitation, mastering accurate phonetics, and handling everyday basic interactions.'}
+                        : locale === 'en'
+                        ? 'Overcoming hesitation, mastering accurate phonetics, and handling everyday basic interactions.'
+                        : 'Surmonter l\'hésitation, maîtriser la prononciation exacte et tenir des conversations simples du quotidien.'}
                     </p>
                   </div>
                 </div>
@@ -765,12 +769,14 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.05rem', color: 'var(--dark-brown)' }}>
-                      {locale === 'ar' ? 'المستوى المتوسط (Intermediate)' : 'Intermediate Level'}
+                      {locale === 'ar' ? 'المستوى المتوسط (Intermediate)' : locale === 'en' ? 'Intermediate Level' : 'Niveau Intermédiaire'}
                     </h4>
                     <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
                       {locale === 'ar'
                         ? 'التعبير عن الآراء بطلاقة، فهم المحادثات المعقدة، والقدرة على التعامل في العمل والسفر.'
-                        : 'Expressing nuanced viewpoints, understanding native audio, and conversing smoothly at work or travel.'}
+                        : locale === 'en'
+                        ? 'Expressing nuanced viewpoints, understanding native audio, and conversing smoothly at work or travel.'
+                        : 'Exprimer ses opinions avec aisance, comprendre des discussions complexes et naviguer au travail ou en voyage.'}
                     </p>
                   </div>
                 </div>
@@ -796,12 +802,14 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.05rem', color: 'var(--dark-brown)' }}>
-                      {locale === 'ar' ? 'الإتقان والشهادات الدولية (Advanced Language Achievement)' : 'Advanced Language Achievement'}
+                      {locale === 'ar' ? 'الإتقان والشهادات الدولية (Advanced Language Achievement)' : locale === 'en' ? 'Advanced Language Achievement' : 'Maîtrise Avancée & Certifications'}
                     </h4>
                     <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
                       {locale === 'ar'
                         ? 'الطلاقة المهنية التامة والجاهزية لاجتياز اختبارات IELTS و TCF و Goethe بأعلى الدرجات المطلوبة للمنح والهجرة.'
-                        : 'Full professional bilingual fluency and readiness to ace official exams (IELTS, TCF, Goethe) with flying colors.'}
+                        : locale === 'en'
+                        ? 'Full professional bilingual fluency and readiness to ace official exams (IELTS, TCF, Goethe) with flying colors.'
+                        : 'Aisance professionnelle complète et préparation ciblée aux examens officiels (IELTS, TCF, Goethe) pour les bourses et carrières.'}
                     </p>
                   </div>
                 </div>
@@ -812,7 +820,7 @@ export default function HomePage() {
                 className="btn-primary"
                 style={{ padding: '0.9rem 2rem' }}
               >
-                <span>{locale === 'ar' ? 'ابدأ رحلتك نحو المستوى C1' : 'Start Your Journey to C1'}</span>
+                <span>{locale === 'ar' ? 'ابدأ رحلتك نحو المستوى C1' : locale === 'en' ? 'Start Your Journey to C1' : 'Commencez Votre Progression vers C1'}</span>
                 {dir === 'rtl' ? <ArrowLeft size={18} /> : <ArrowRight size={18} />}
               </button>
             </div>
@@ -961,7 +969,7 @@ export default function HomePage() {
               return (
                 <div className="card" style={{ textAlign: 'center', padding: '3.5rem 1.5rem' }}>
                   <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>
-                    {locale === 'ar' ? 'لا توجد دورات مسجلة لهذه الفئة حالياً.' : 'Aucune formation pour cette sélection.'}
+                    {locale === 'ar' ? 'لا توجد دورات مسجلة لهذه الفئة حالياً.' : locale === 'en' ? 'No courses available for this selection.' : 'Aucune formation pour cette sélection.'}
                   </p>
                 </div>
               );
@@ -984,145 +992,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* MEET OUR EXPERT FACULTY & INSTRUCTORS */}
-      <section style={{ padding: '5.5rem 0', backgroundColor: '#FFFFFF', borderBottom: '1px solid var(--border)' }}>
-        <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '750px', margin: '0 auto 3.5rem auto' }}>
-            <span className="badge badge-primary" style={{ marginBottom: '0.85rem' }}>
-              <GraduationCap size={15} />
-              {locale === 'ar' ? 'هيئة التدريس المعتمدة' : locale === 'en' ? 'Certified Faculty' : 'Nos Formateurs'}
-            </span>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', fontWeight: 900, marginBottom: '1rem', color: 'var(--dark-brown)' }}>
-              {locale === 'ar' ? 'نخبة من الأساتذة والمدربين المعتمدين' : locale === 'en' ? 'Learn from Elite Certified Educators' : 'Apprenez avec Nos Meilleurs Formateurs'}
-            </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.7 }}>
-              {locale === 'ar'
-                ? 'فريق من الأساتذة المتخصصين ذوي الخبرة العالية في تدريس اللغات والتحضير للامتحانات الدولية الرسمية (IELTS, TCF, Goethe).'
-                : locale === 'en'
-                ? 'Qualified language mentors dedicated to conversational mastery, business communication, and top exam percentiles.'
-                : 'Des enseignants diplômés et passionnés qui vous accompagnent vers la réussite de vos examens et votre fluidité orale.'}
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '2rem',
-            }}
-          >
-            {teachers.map((tch) => (
-              <div
-                key={tch.id}
-                className="card card-interactive"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  borderRadius: 'var(--radius-xl)',
-                  border: '1.5px solid var(--border)',
-                  padding: '1.75rem',
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-                    <div
-                      style={{
-                        width: '56px',
-                        height: '56px',
-                        borderRadius: 'var(--radius-full)',
-                        background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
-                        color: '#FFFFFF',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontWeight: 900,
-                        fontSize: '1.25rem',
-                        flexShrink: 0,
-                        boxShadow: '0 4px 15px rgba(250, 70, 29, 0.25)',
-                      }}
-                    >
-                      {tch.name.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <h3 style={{ fontSize: '1.18rem', margin: 0, color: 'var(--dark-brown)', fontWeight: 800 }}>
-                        {tch.name}
-                      </h3>
-                      <span
-                        style={{
-                          fontSize: '0.8rem',
-                          fontWeight: 700,
-                          color: 'var(--primary)',
-                          display: 'block',
-                          marginTop: '0.15rem',
-                        }}
-                      >
-                        {tch.qualifications_fr || tch.specialties_fr}
-                      </span>
-                    </div>
-                  </div>
-
-                  {tch.bio_fr && (
-                    <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-                      {tch.bio_fr}
-                    </p>
-                  )}
-
-                  {/* Courses taught by this teacher */}
-                  <div style={{ marginBottom: '1rem' }}>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--dark-brown)', display: 'block', marginBottom: '0.45rem' }}>
-                      {locale === 'ar' ? 'الدورات التي يُدرّسها:' : 'Formations enseignées :'}
-                    </span>
-                    {tch.courses && tch.courses.length > 0 ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                        {tch.courses.map((c: any) => (
-                          <div
-                            key={c.id}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              background: 'var(--bg-warm)',
-                              border: '1px solid var(--border)',
-                              borderRadius: '6px',
-                              padding: '0.35rem 0.6rem',
-                              fontSize: '0.78rem',
-                              fontWeight: 700,
-                              color: 'var(--dark-brown)',
-                            }}
-                          >
-                            <span>{locale === 'ar' ? c.title_ar : c.title_fr}</span>
-                            <span className="badge badge-secondary" style={{ fontSize: '0.7rem', padding: '0.1rem 0.4rem' }}>
-                              {c.lang_name}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                        {locale === 'ar' ? 'دورات قادمة قيد البرمجة' : 'Sessions en cours de programmation'}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                    {tch.courses?.length || 0} {locale === 'ar' ? 'دورات نشطة' : 'cours actifs'}
-                  </span>
-                  <button
-                    onClick={() => handleOpenEnroll(tch.courses?.[0])}
-                    className="btn-primary btn-sm"
-                    style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
-                  >
-                    <span>{t('cta_enroll_now')}</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* TEACHING METHODOLOGY: 4 PILLARS */}
       <section style={{ padding: '5rem 0', backgroundColor: '#FFFFFF', borderBottom: '1px solid var(--border)' }}>

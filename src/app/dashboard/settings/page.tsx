@@ -32,11 +32,13 @@ export default function SettingsManagePage() {
     <div>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '1.6rem', fontWeight: 900, margin: 0, color: 'var(--dark-brown)' }}>
-          {locale === 'ar' ? 'إعدادات المنصة وسجل الأمان' : 'Paramètres & Journal d\'Audit'}
+          {locale === 'ar' ? 'إعدادات المنصة وسجل الأمان' : locale === 'en' ? 'Platform Settings & Audit Log' : 'Paramètres & Journal d\'Audit'}
         </h1>
         <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
           {locale === 'ar'
             ? 'تكوين بيانات الأكاديمية الرسمية، معلومات الحساب البريدي بريدي موب، ومراجعة سجل العمليات'
+            : locale === 'en'
+            ? 'Configure official academy information, BaridiMob payment details, and inspect the security audit trail'
             : 'Configuration générale, coordonnées BaridiMob et traçabilité'}
         </p>
       </div>
@@ -47,20 +49,20 @@ export default function SettingsManagePage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
             <CreditCard size={20} color="var(--primary)" />
             <h3 style={{ fontSize: '1.2rem', margin: 0, color: 'var(--dark-brown)' }}>
-              {locale === 'ar' ? 'بيانات الأكاديمية والدفع المعتمدة' : 'Coordonnées & Paiements'}
+              {locale === 'ar' ? 'بيانات الأكاديمية والدفع المعتمدة' : locale === 'en' ? 'Official Academy & Payment Info' : 'Coordonnées & Paiements'}
             </h3>
           </div>
 
           {saved && (
             <div style={{ backgroundColor: 'var(--success-light)', color: 'var(--success)', padding: '0.8rem', borderRadius: 'var(--radius-md)', marginBottom: '1.25rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <CheckCircle2 size={16} />
-              <span>{locale === 'ar' ? 'تم حفظ التعديلات بنجاح !' : 'Modifications enregistrées avec succès !'}</span>
+              <span>{locale === 'ar' ? 'تم حفظ التعديلات بنجاح !' : locale === 'en' ? 'Settings saved successfully!' : 'Modifications enregistrées avec succès !'}</span>
             </div>
           )}
 
           <form onSubmit={handleSave}>
             <div className="form-group">
-              <label className="form-label">{locale === 'ar' ? 'اسم المنصة / الأكاديمية' : 'Nom de l\'Académie'}</label>
+              <label className="form-label">{locale === 'ar' ? 'اسم المنصة / الأكاديمية' : locale === 'en' ? 'Academy / Institution Name' : 'Nom de l\'Académie'}</label>
               <input
                 type="text"
                 value={academyName}
@@ -104,7 +106,7 @@ export default function SettingsManagePage() {
 
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.25rem', marginTop: '1.25rem' }}>
               <h4 style={{ fontSize: '0.95rem', marginBottom: '0.85rem' }}>
-                {locale === 'ar' ? 'بيانات الحساب البريدي الجزائري (CCP / BaridiMob)' : 'Coordonnées CCP & BaridiMob'}
+                {locale === 'ar' ? 'بيانات الحساب البريدي الجزائري (CCP / BaridiMob)' : locale === 'en' ? 'Algerian Postal Payment Details (CCP / BaridiMob)' : 'Coordonnées CCP & BaridiMob'}
               </h4>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -145,13 +147,15 @@ export default function SettingsManagePage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
             <History size={20} color="var(--secondary)" />
             <h3 style={{ fontSize: '1.2rem', margin: 0, color: 'var(--dark-brown)' }}>
-              {locale === 'ar' ? 'سجل العمليات الإدارية (Audit Log)' : 'Journal d\'Audit & Sécurité'}
+              {locale === 'ar' ? 'سجل العمليات الإدارية (Audit Log)' : locale === 'en' ? 'Administrative Audit & Security Log' : 'Journal d\'Audit & Sécurité'}
             </h3>
           </div>
 
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
             {locale === 'ar'
               ? 'تسجيل فوري لجميع التعديلات والعمليات الحساسة لضمان الشفافية والأمان.'
+              : locale === 'en'
+              ? 'Full real-time audit trail of all sensitive operations ensuring transparency and data safety.'
               : 'Traçabilité intégrale de toutes les opérations sensibles.'}
           </p>
 

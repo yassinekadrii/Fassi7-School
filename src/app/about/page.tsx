@@ -191,11 +191,11 @@ export default function AboutPage() {
               </h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.75rem' }}>
                 {[
-                  { en: 'Understanding', ar: 'متفهم' },
-                  { en: 'Modern', ar: 'عصري' },
-                  { en: 'Comfortable', ar: 'مريح' },
-                  { en: 'Committed', ar: 'ملتزم' },
-                  { en: 'Flexible', ar: 'مرن' },
+                  { en: 'Understanding', ar: 'متفهم', fr: 'Compréhensif' },
+                  { en: 'Modern', ar: 'عصري', fr: 'Moderne' },
+                  { en: 'Comfortable', ar: 'مريح', fr: 'Confortable' },
+                  { en: 'Committed', ar: 'ملتزم', fr: 'Engagé' },
+                  { en: 'Flexible', ar: 'مرن', fr: 'Flexible' },
                 ].map((item, idx) => (
                   <span
                     key={idx}
@@ -209,7 +209,7 @@ export default function AboutPage() {
                       border: '1px solid rgba(58, 20, 4, 0.1)',
                     }}
                   >
-                    {locale === 'ar' ? item.ar : item.en}
+                    {locale === 'ar' ? item.ar : locale === 'en' ? item.en : item.fr}
                   </span>
                 ))}
               </div>
@@ -276,12 +276,18 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h4 style={{ margin: '0 0 0.3rem 0', fontSize: '1.05rem', color: 'var(--dark-brown)' }}>
-                      {locale === 'ar' ? 'الفقاعة المبتسمة: النطق وبوابة الفرص (Door & Speaking)' : 'The Smiling Bubble: Speaking & Door'}
+                      {locale === 'ar'
+                        ? 'الفقاعة المبتسمة: النطق وبوابة الفرص (Door & Speaking)'
+                        : locale === 'en'
+                        ? 'The Smiling Bubble: Speaking & Door'
+                        : 'La Bulle Souriante : Pratique Orale & Porte vers le Monde'}
                     </h4>
                     <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
                       {locale === 'ar'
                         ? 'ترمز لكسر حاجز الخوف والحديث بطلاقة وابتسامة، والباب المفتوح أمام المتعلم لاكتشاف آفاق مهنية وعلمية جديدة.'
-                        : 'Represents speaking with confidence and a smile, acting as an open doorway to global opportunities.'}
+                        : locale === 'en'
+                        ? 'Represents speaking with confidence and a smile, acting as an open doorway to global opportunities.'
+                        : 'Symbolise l\'expression orale fluide avec le sourire et la porte ouverte vers de nouvelles opportunités mondiales.'}
                     </p>
                   </div>
                 </div>
@@ -305,12 +311,18 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h4 style={{ margin: '0 0 0.3rem 0', fontSize: '1.05rem', color: 'var(--dark-brown)' }}>
-                      {locale === 'ar' ? 'زنبرك المرونة والمرافقة (Spring, Flexibility & Accompaniment)' : 'The Spring: Flexibility & Accompaniment'}
+                      {locale === 'ar'
+                        ? 'زنبرك المرونة والمرافقة (Spring, Flexibility & Accompaniment)'
+                        : locale === 'en'
+                        ? 'The Spring: Flexibility & Accompaniment'
+                        : 'Le Ressort : Flexibilité & Accompagnement Continu'}
                     </h4>
                     <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
                       {locale === 'ar'
                         ? 'يمثل رقم 7 المرن التكيف مع جدول وظروف المتعلم، والمرافقة التدريبية المستمرة من البداية حتى الاحتراف.'
-                        : 'Represents adaptive learning that flexes around your schedule, alongside continuous mentorship until mastery.'}
+                        : locale === 'en'
+                        ? 'Represents adaptive learning that flexes around your schedule, alongside continuous mentorship until mastery.'
+                        : 'Incarne un apprentissage adaptable qui s\'ajuste à votre emploi du temps avec un tutorat attentif jusqu\'à la maîtrise.'}
                     </p>
                   </div>
                 </div>

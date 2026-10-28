@@ -19,7 +19,12 @@ export async function GET(request: Request) {
         tl.name_en as language_name_en,
         tl.flag_emoji,
         tl.code as language_code,
-        (SELECT COUNT(*) FROM enrollments WHERE course_id = c.id AND status IN ('accepted', 'awaiting_payment', 'confirmed')) as enrolled_count
+        (SELECT COUNT(*) FROM enrollments WHERE course_id = c.id) as total_enrollments_count,
+        (SELECT COUNT(*) FROM enrollments WHERE course_id = c.id AND status IN ('accepted', 'awaiting_payment', 'confirmed')) as enrolled_count,
+        (SELECT COUNT(*) FROM enrollments WHERE course_id = c.id AND status = 'confirmed') as confirmed_count,
+        (SELECT COUNT(*) FROM enrollments WHERE course_id = c.id AND status = 'awaiting_payment') as awaiting_payment_count,
+        (SELECT COUNT(*) FROM enrollments WHERE course_id = c.id AND status = 'under_review') as under_review_count,
+        (SELECT COALESCE(SUM(amount_paid), 0) FROM enrollments WHERE course_id = c.id) as total_revenue
       FROM courses c
       JOIN teaching_languages tl ON tl.id = c.language_id
       WHERE c.is_archived = 0

@@ -133,10 +133,10 @@ export default function StudentPortalPage() {
                   {sessions.map((s) => (
                     <div key={s.id} className="card" style={{ padding: '1.5rem' }}>
                       <span className="badge badge-primary" style={{ marginBottom: '0.4rem' }}>
-                        {s.language_name_fr}
+                        {locale === 'ar' ? s.language_name_ar : locale === 'en' ? (s.language_name_en || s.language_name_fr) : s.language_name_fr}
                       </span>
                       <h3 style={{ fontSize: '1.1rem', margin: '0 0 0.5rem 0' }}>
-                        {locale === 'ar' ? s.title_ar : s.title_fr}
+                        {locale === 'ar' ? s.title_ar : locale === 'en' ? (s.title_en || s.title_fr) : s.title_fr}
                       </h3>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--primary)', fontWeight: 700, fontSize: '0.88rem', marginBottom: '1.25rem' }}>

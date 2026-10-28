@@ -106,6 +106,8 @@ export default function StaffManagementPage() {
         setSuccessMsg(
           locale === 'ar'
             ? `تم إنشاء حساب السكرتارية بنجاح (${data.secretary.name}) !`
+            : locale === 'en'
+            ? `Secretary account created successfully (${data.secretary.name})!`
             : `Compte secrétaire créé avec succès (${data.secretary.name}) !`
         );
         setName('');
@@ -137,6 +139,8 @@ export default function StaffManagementPage() {
         setSuccessMsg(
           locale === 'ar'
             ? `تم تحديث حالة الحساب إلى ${nextStatus === 'active' ? 'مفعل' : 'معطل'}`
+            : locale === 'en'
+            ? `Account status updated to ${nextStatus === 'active' ? 'Active' : 'Disabled'}`
             : `Statut du compte mis à jour (${nextStatus})`
         );
         fetchStaff();
@@ -165,6 +169,8 @@ export default function StaffManagementPage() {
         setSuccessMsg(
           locale === 'ar'
             ? `تم تغيير كلمة مرور السكرتارية (${resetModalAccount.name}) بنجاح !`
+            : locale === 'en'
+            ? `Password successfully reset for ${resetModalAccount.name}!`
             : `Mot de passe réinitialisé avec succès pour ${resetModalAccount.name} !`
         );
         setResetModalAccount(null);
@@ -183,6 +189,8 @@ export default function StaffManagementPage() {
     const confirmPrompt =
       locale === 'ar'
         ? `هل أنت متأكد من رغبتك في حذف حساب السكرتارية (${account.name}) نهائياً؟`
+        : locale === 'en'
+        ? `Are you sure you want to permanently delete secretary account (${account.name})?`
         : `Êtes-vous sûr de vouloir supprimer définitivement le compte secrétaire de ${account.name} ?`;
 
     if (!window.confirm(confirmPrompt)) return;
@@ -192,7 +200,11 @@ export default function StaffManagementPage() {
       const data = await res.json();
       if (res.ok) {
         setSuccessMsg(
-          locale === 'ar' ? 'تم حذف حساب السكرتارية بنجاح' : 'Compte secrétaire supprimé avec succès'
+          locale === 'ar'
+            ? 'تم حذف حساب السكرتارية بنجاح'
+            : locale === 'en'
+            ? 'Secretary account deleted successfully'
+            : 'Compte secrétaire supprimé avec succès'
         );
         fetchStaff();
       } else {
@@ -223,11 +235,13 @@ export default function StaffManagementPage() {
           <Lock size={32} />
         </div>
         <h2 style={{ color: 'var(--dark-brown)', marginBottom: '0.5rem' }}>
-          {locale === 'ar' ? 'صلاحيات غير كافية' : 'Accès Restreint'}
+          {locale === 'ar' ? 'صلاحيات غير كافية' : locale === 'en' ? 'Access Restricted' : 'Accès Restreint'}
         </h2>
         <p style={{ color: 'var(--text-muted)', maxWidth: '480px', margin: '0 auto' }}>
           {locale === 'ar'
             ? 'هذه الصفحة مخصصة حصرياً لمالك الأكاديمية (Super Admin) لإنشاء وإدارة حسابات السكرتارية.'
+            : locale === 'en'
+            ? 'This section is strictly reserved for the Academy Owner (Super Admin) to create and manage secretary accounts.'
             : 'Cette section est réservée exclusivement au Propriétaire (Super Admin) pour créer et gérer les comptes du secrétariat.'}
         </p>
       </div>
@@ -267,11 +281,13 @@ export default function StaffManagementPage() {
             </span>
           </div>
           <h1 style={{ fontSize: '1.6rem', fontWeight: 900, margin: 0, color: 'var(--dark-brown)' }}>
-            {locale === 'ar' ? 'إدارة حسابات السكرتارية' : 'Gestion des Comptes Secrétariat'}
+            {locale === 'ar' ? 'إدارة حسابات السكرتارية' : locale === 'en' ? 'Administrative Staff & Secretarial Accounts' : 'Gestion des Comptes Secrétariat'}
           </h1>
           <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             {locale === 'ar'
               ? 'أنت المالك، تملك الصلاحية الحصرية لإنشاء حسابات السكرتارية (Admin) وتحديد بيانات دخولهم وكلمات المرور.'
+              : locale === 'en'
+              ? 'As the institution owner, you have exclusive authorization to create and manage administrative secretary credentials.'
               : 'En tant que propriétaire, vous êtes le seul habilité à créer et administrer les comptes de vos secrétaires.'}
           </p>
         </div>
@@ -282,7 +298,7 @@ export default function StaffManagementPage() {
           style={{ gap: '0.5rem', padding: '0.75rem 1.35rem', boxShadow: '0 4px 14px rgba(250, 70, 29, 0.25)' }}
         >
           <UserPlus size={18} />
-          <span>{locale === 'ar' ? 'إنشاء حساب سكرتارية جديد' : 'Créer un Compte Secrétaire'}</span>
+          <span>{locale === 'ar' ? 'إنشاء حساب سكرتارية جديد' : locale === 'en' ? '+ Create Secretary Account' : 'Créer un Compte Secrétaire'}</span>
         </button>
       </div>
 
@@ -344,7 +360,7 @@ export default function StaffManagementPage() {
           </div>
           <div>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-              {locale === 'ar' ? 'مالك الأكاديمية (Owner)' : 'Propriétaire / Direction'}
+              {locale === 'ar' ? 'مالك الأكاديمية (Owner)' : locale === 'en' ? 'Academy Ownership' : 'Propriétaire / Direction'}
             </span>
             <h4 style={{ margin: '0.1rem 0 0 0', fontSize: '1.1rem', fontWeight: 900 }}>
               {user?.name || 'Directeur Fassi7'}
@@ -369,7 +385,7 @@ export default function StaffManagementPage() {
           </div>
           <div>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-              {locale === 'ar' ? 'عدد حسابات السكرتارية' : 'Comptes Secrétariat Actifs'}
+              {locale === 'ar' ? 'عدد حسابات السكرتارية' : locale === 'en' ? 'Active Secretary Staff' : 'Comptes Secrétariat Actifs'}
             </span>
             <h4 style={{ margin: '0.1rem 0 0 0', fontSize: '1.35rem', fontWeight: 900, color: 'var(--dark-brown)' }}>
               {secretaries.filter((s) => s.status === 'active').length} / {secretaries.length}
@@ -394,10 +410,10 @@ export default function StaffManagementPage() {
           </div>
           <div>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-              {locale === 'ar' ? 'نوع الحسابات المصرحة' : 'Système d\'Accès'}
+              {locale === 'ar' ? 'نوع الحسابات المصرحة' : locale === 'en' ? 'RBAC Access Model' : 'Système d\'Accès'}
             </span>
             <h4 style={{ margin: '0.1rem 0 0 0', fontSize: '0.95rem', fontWeight: 800, color: '#10B981' }}>
-              {locale === 'ar' ? 'المالك والسكرتارية فقط' : 'Propriétaire & Secrétariat'}
+              {locale === 'ar' ? 'المالك والسكرتارية فقط' : locale === 'en' ? 'Super Admin & Staff' : 'Propriétaire & Secrétariat'}
             </h4>
           </div>
         </div>
@@ -417,28 +433,30 @@ export default function StaffManagementPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <UserCheck size={20} color="var(--primary)" />
             <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--dark-brown)' }}>
-              {locale === 'ar' ? 'قائمة حسابات السكرتارية المعتمدة' : 'Liste des Comptes Secrétaires'}
+              {locale === 'ar' ? 'قائمة حسابات السكرتارية المعتمدة' : locale === 'en' ? 'Authorized Secretary Staff Accounts' : 'Liste des Comptes Secrétaires'}
             </h3>
           </div>
           <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-            {secretaries.length} {locale === 'ar' ? 'حساب' : 'compte(s)'}
+            {secretaries.length} {locale === 'ar' ? 'حساب' : locale === 'en' ? 'account(s)' : 'compte(s)'}
           </span>
         </div>
 
         {loading ? (
           <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--primary)', fontWeight: 700 }}>
-            {locale === 'ar' ? 'جاري تحميل الحسابات...' : 'Chargement des comptes...'}
+            {locale === 'ar' ? 'جاري تحميل الحسابات...' : locale === 'en' ? 'Loading accounts...' : 'Chargement des comptes...'}
           </div>
         ) : secretaries.length === 0 ? (
           <div style={{ padding: '3rem', textAlign: 'center' }}>
             <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
               {locale === 'ar'
                 ? 'لا توجد حسابات سكرتارية بعد. انقر على زر "إنشاء حساب سكرتارية جديد" بالاعلى.'
+                : locale === 'en'
+                ? 'No secretarial staff created yet. Click "+ Create Secretary Account" above.'
                 : 'Aucun compte secrétaire pour le moment. Cliquez sur "Créer un Compte Secrétaire".'}
             </p>
             <button onClick={() => setIsModalOpen(true)} className="btn-outline btn-sm">
               <UserPlus size={15} />
-              <span>{locale === 'ar' ? 'إضافة سكرتيرة' : 'Ajouter une secrétaire'}</span>
+              <span>{locale === 'ar' ? 'إضافة سكرتيرة' : locale === 'en' ? 'Add Secretary' : 'Ajouter une secrétaire'}</span>
             </button>
           </div>
         ) : (
@@ -446,12 +464,12 @@ export default function StaffManagementPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'start' }}>
               <thead>
                 <tr style={{ backgroundColor: 'var(--bg-warm)', borderBottom: '1px solid var(--border)', fontSize: '0.84rem', color: 'var(--text-muted)' }}>
-                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'السكرتيرة' : 'Secrétaire'}</th>
-                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'البريد الإلكتروني' : 'Email'}</th>
-                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'الهاتف' : 'Téléphone'}</th>
-                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'الحالة' : 'Statut'}</th>
-                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'تاريخ الإنشاء' : 'Créé le'}</th>
-                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'center' }}>{locale === 'ar' ? 'الإجراءات' : 'Actions'}</th>
+                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'السكرتيرة' : locale === 'en' ? 'Secretary' : 'Secrétaire'}</th>
+                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'البريد الإلكتروني' : locale === 'en' ? 'Email' : 'Email'}</th>
+                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'الهاتف' : locale === 'en' ? 'Phone' : 'Téléphone'}</th>
+                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'الحالة' : locale === 'en' ? 'Status' : 'Statut'}</th>
+                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'start' }}>{locale === 'ar' ? 'تاريخ الإنشاء' : locale === 'en' ? 'Created On' : 'Créé le'}</th>
+                  <th style={{ padding: '0.85rem 1.25rem', textAlign: 'center' }}>{locale === 'ar' ? 'الإجراءات' : locale === 'en' ? 'Actions' : 'Actions'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -507,7 +525,7 @@ export default function StaffManagementPage() {
                           alignItems: 'center',
                           gap: '0.35rem',
                         }}
-                        title={locale === 'ar' ? 'انقر لتبديل حالة التفعيل' : 'Cliquer pour changer le statut'}
+                        title={locale === 'ar' ? 'انقر لتبديل حالة التفعيل' : locale === 'en' ? 'Click to toggle status' : 'Cliquer pour changer le statut'}
                       >
                         <span
                           style={{
@@ -517,12 +535,12 @@ export default function StaffManagementPage() {
                             backgroundColor: sec.status === 'active' ? 'var(--success)' : 'var(--danger)',
                           }}
                         />
-                        <span>{sec.status === 'active' ? (locale === 'ar' ? 'نشط' : 'Actif') : (locale === 'ar' ? 'معطل' : 'Inactif')}</span>
+                        <span>{sec.status === 'active' ? (locale === 'ar' ? 'نشط' : locale === 'en' ? 'Active' : 'Actif') : (locale === 'ar' ? 'معطل' : locale === 'en' ? 'Disabled' : 'Inactif')}</span>
                       </span>
                     </td>
 
                     <td style={{ padding: '1rem 1.25rem', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                      {sec.created_at ? new Date(sec.created_at).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-FR') : '—'}
+                      {sec.created_at ? new Date(sec.created_at).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : locale === 'en' ? 'en-US' : 'fr-FR') : '—'}
                     </td>
 
                     <td style={{ padding: '1rem 1.25rem', textAlign: 'center' }}>
@@ -531,10 +549,10 @@ export default function StaffManagementPage() {
                           onClick={() => setResetModalAccount(sec)}
                           className="btn-outline btn-sm"
                           style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem', gap: '0.3rem' }}
-                          title={locale === 'ar' ? 'إعادة تعيين كلمة المرور' : 'Réinitialiser le mot de passe'}
+                          title={locale === 'ar' ? 'إعادة تعيين كلمة المرور' : locale === 'en' ? 'Reset Password' : 'Réinitialiser le mot de passe'}
                         >
                           <KeyRound size={13} color="var(--primary)" />
-                          <span>{locale === 'ar' ? 'كلمة المرور' : 'Mot de passe'}</span>
+                          <span>{locale === 'ar' ? 'كلمة المرور' : locale === 'en' ? 'Password' : 'Mot de passe'}</span>
                         </button>
 
                         <button
@@ -546,7 +564,7 @@ export default function StaffManagementPage() {
                             color: 'var(--danger)',
                             borderColor: 'rgba(239, 68, 68, 0.3)',
                           }}
-                          title={locale === 'ar' ? 'حذف الحساب' : 'Supprimer'}
+                          title={locale === 'ar' ? 'حذف الحساب' : locale === 'en' ? 'Delete Account' : 'Supprimer'}
                         >
                           <Trash2 size={13} />
                         </button>
@@ -564,30 +582,30 @@ export default function StaffManagementPage() {
       <div className="card" style={{ backgroundColor: 'var(--bg-warm)', border: '1.5px solid var(--border)' }}>
         <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem', color: 'var(--dark-brown)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <ShieldCheck size={18} color="var(--primary)" />
-          <span>{locale === 'ar' ? 'مخطط الصلاحيات في أكاديمية فصيح' : 'Architecture des Rôles & Accès'}</span>
+          <span>{locale === 'ar' ? 'مخطط الصلاحيات في أكاديمية فصيح' : locale === 'en' ? 'Fassi7 Role & Permissions Architecture' : 'Architecture des Rôles & Accès'}</span>
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
           <div style={{ backgroundColor: '#FFFFFF', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 900, color: 'var(--primary)', marginBottom: '0.4rem' }}>
               <ShieldCheck size={16} />
-              <span>{locale === 'ar' ? 'مالك الأكاديمية (Super Admin)' : 'Super Admin (Propriétaire)'}</span>
+              <span>{locale === 'ar' ? 'مالك الأكاديمية (Super Admin)' : locale === 'en' ? 'Academy Owner (Super Admin)' : 'Super Admin (Propriétaire)'}</span>
             </div>
             <ul style={{ margin: 0, paddingInlineStart: '1.2rem', fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-              <li>{locale === 'ar' ? 'إنشاء وإلغاء وتعديل حسابات السكرتارية' : 'Créer et administrer les comptes secrétaires'}</li>
-              <li>{locale === 'ar' ? 'التحكم الكامل في إعدادات المنصة والحساب البريدي' : 'Gestion complète des paramètres et BaridiMob'}</li>
-              <li>{locale === 'ar' ? 'الاطلاع على التقارير المالية والعمليات الحساسة' : 'Accès aux rapports financiers et traçabilité'}</li>
+              <li>{locale === 'ar' ? 'إنشاء وإلغاء وتعديل حسابات السكرتارية' : locale === 'en' ? 'Provision and revoke secretarial staff accounts' : 'Créer et administrer les comptes secrétaires'}</li>
+              <li>{locale === 'ar' ? 'التحكم الكامل في إعدادات المنصة والحساب البريدي' : locale === 'en' ? 'Full platform settings, CCP / BaridiMob coordinates' : 'Gestion complète des paramètres et BaridiMob'}</li>
+              <li>{locale === 'ar' ? 'الاطلاع على التقارير المالية والعمليات الحساسة' : locale === 'en' ? 'Financial audit logs and sensitive transaction reviews' : 'Accès aux rapports financiers et traçabilité'}</li>
             </ul>
           </div>
 
           <div style={{ backgroundColor: '#FFFFFF', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 900, color: 'var(--dark-brown)', marginBottom: '0.4rem' }}>
               <UserCheck size={16} color="var(--secondary)" />
-              <span>{locale === 'ar' ? 'سكرتارية الأكاديمية (Admin)' : 'Admin (Secrétaire)'}</span>
+              <span>{locale === 'ar' ? 'سكرتارية الأكاديمية (Admin)' : locale === 'en' ? 'Academy Administration (Secretary)' : 'Admin (Secrétaire)'}</span>
             </div>
             <ul style={{ margin: 0, paddingInlineStart: '1.2rem', fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
-              <li>{locale === 'ar' ? 'إدارة التسجيلات، الطلاب والأساتذة' : 'Gestion des inscriptions, étudiants et formateurs'}</li>
-              <li>{locale === 'ar' ? 'تأكيد الحصص، الجداول الزمني والمدفوعات' : 'Organisation des plannings et saisie des règlements'}</li>
-              <li>{locale === 'ar' ? 'لا يمكنها إنشاء حسابات أخرى أو تعديل إعدادات المالك' : 'Ne peut pas créer de comptes ni modifier la direction'}</li>
+              <li>{locale === 'ar' ? 'إدارة التسجيلات، الطلاب والأساتذة' : locale === 'en' ? 'Manage registrations, students and faculty assignments' : 'Gestion des inscriptions, étudiants et formateurs'}</li>
+              <li>{locale === 'ar' ? 'تأكيد الحصص، الجداول الزمني والمدفوعات' : locale === 'en' ? 'Validate schedules, roll calls and tuition collections' : 'Organisation des plannings et saisie des règlements'}</li>
+              <li>{locale === 'ar' ? 'لا يمكنها إنشاء حسابات أخرى أو تعديل إعدادات المالك' : locale === 'en' ? 'Restricted from managing system credentials or owner settings' : 'Ne peut pas créer de comptes ni modifier la direction'}</li>
             </ul>
           </div>
         </div>
@@ -637,7 +655,7 @@ export default function StaffManagementPage() {
                   <UserPlus size={20} />
                 </div>
                 <h3 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--dark-brown)' }}>
-                  {locale === 'ar' ? 'إنشاء حساب سكرتارية جديد' : 'Créer un Compte Secrétaire'}
+                  {locale === 'ar' ? 'إنشاء حساب سكرتارية جديد' : locale === 'en' ? 'Create Secretary Account' : 'Créer un Compte Secrétaire'}
                 </h3>
               </div>
               <button
@@ -657,11 +675,11 @@ export default function StaffManagementPage() {
 
             <form onSubmit={handleCreateSecretary}>
               <div className="form-group">
-                <label className="form-label">{locale === 'ar' ? 'الاسم الكامل للسكرتيرة' : 'Nom complet de la secrétaire'}</label>
+                <label className="form-label">{locale === 'ar' ? 'الاسم الكامل للسكرتيرة' : locale === 'en' ? 'Full Name' : 'Nom complet de la secrétaire'}</label>
                 <input
                   type="text"
                   required
-                  placeholder={locale === 'ar' ? 'مثال: نادية المنصوري' : 'ex: Nadia Mansouri'}
+                  placeholder={locale === 'ar' ? 'مثال: نادية المنصوري' : locale === 'en' ? 'e.g. Nadia Mansouri' : 'ex: Nadia Mansouri'}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="form-input"
@@ -712,7 +730,7 @@ export default function StaffManagementPage() {
               <div className="form-group">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
                   <label className="form-label" style={{ margin: 0 }}>
-                    {locale === 'ar' ? 'كلمة المرور الابتدائية' : 'Mot de passe initial'}
+                    {locale === 'ar' ? 'كلمة المرور الابتدائية' : locale === 'en' ? 'Initial Password' : 'Mot de passe initial'}
                   </label>
                   <button
                     type="button"
@@ -730,7 +748,7 @@ export default function StaffManagementPage() {
                     }}
                   >
                     <Sparkles size={12} />
-                    <span>{locale === 'ar' ? 'توليد كلمة سر آمنة' : 'Générer mot de passe'}</span>
+                    <span>{locale === 'ar' ? 'توليد كلمة سر آمنة' : locale === 'en' ? 'Generate Secure Password' : 'Générer mot de passe'}</span>
                   </button>
                 </div>
 
@@ -783,16 +801,18 @@ export default function StaffManagementPage() {
               >
                 {locale === 'ar'
                   ? '🔒 هذا الحساب سيمنح صلاحيات السكرتارية (Admin) للوصول إلى لوحة التحكم وإدارة الأفواج والطلاب دون الوصول لإعدادات المالك.'
+                  : locale === 'en'
+                  ? '🔒 This staff account is granted Admin (Secretary) permissions to manage enrollments and courses, without access to Owner security settings.'
                   : '🔒 Ce compte disposera des droits Secrétaire (Admin) pour gérer l\'académie au quotidien sans accès aux paramètres de direction.'}
               </div>
 
               <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setIsModalOpen(false)} className="btn-outline">
-                  {locale === 'ar' ? 'إلغاء' : 'Annuler'}
+                  {locale === 'ar' ? 'إلغاء' : locale === 'en' ? 'Cancel' : 'Annuler'}
                 </button>
                 <button type="submit" disabled={submitting} className="btn-primary" style={{ gap: '0.4rem' }}>
                   <UserPlus size={16} />
-                  <span>{submitting ? '...' : locale === 'ar' ? 'تأكيد وإنشاء الحساب' : 'Créer le Compte'}</span>
+                  <span>{submitting ? '...' : locale === 'ar' ? 'تأكيد وإنشاء الحساب' : locale === 'en' ? 'Confirm & Create Account' : 'Créer le Compte'}</span>
                 </button>
               </div>
             </form>
@@ -831,7 +851,7 @@ export default function StaffManagementPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <KeyRound size={20} color="var(--primary)" />
                 <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--dark-brown)' }}>
-                  {locale === 'ar' ? 'إعادة تعيين كلمة المرور' : 'Réinitialiser le mot de passe'}
+                  {locale === 'ar' ? 'إعادة تعيين كلمة المرور' : locale === 'en' ? 'Reset Password' : 'Réinitialiser le mot de passe'}
                 </h3>
               </div>
               <button
@@ -852,17 +872,19 @@ export default function StaffManagementPage() {
             <p style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
               {locale === 'ar'
                 ? `تحديد كلمة مرور جديدة للسكرتيرة: ${resetModalAccount.name} (${resetModalAccount.email})`
+                : locale === 'en'
+                ? `Define a new secure password for: ${resetModalAccount.name} (${resetModalAccount.email})`
                 : `Définir un nouveau mot de passe pour ${resetModalAccount.name} (${resetModalAccount.email})`}
             </p>
 
             <form onSubmit={handleResetPassword}>
               <div className="form-group">
-                <label className="form-label">{locale === 'ar' ? 'كلمة المرور الجديدة' : 'Nouveau mot de passe'}</label>
+                <label className="form-label">{locale === 'ar' ? 'كلمة المرور الجديدة' : locale === 'en' ? 'New Password' : 'Nouveau mot de passe'}</label>
                 <input
                   type="text"
                   required
                   minLength={6}
-                  placeholder={locale === 'ar' ? 'أدخل 6 أحرف على الأقل' : 'Au moins 6 caractères'}
+                  placeholder={locale === 'ar' ? 'أدخل 6 أحرف على الأقل' : locale === 'en' ? 'At least 6 characters' : 'Au moins 6 caractères'}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="form-input"
@@ -872,11 +894,11 @@ export default function StaffManagementPage() {
 
               <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
                 <button type="button" onClick={() => setResetModalAccount(null)} className="btn-outline">
-                  {locale === 'ar' ? 'إلغاء' : 'Annuler'}
+                  {locale === 'ar' ? 'إلغاء' : locale === 'en' ? 'Cancel' : 'Annuler'}
                 </button>
                 <button type="submit" disabled={resetting || !newPassword} className="btn-primary" style={{ gap: '0.4rem' }}>
                   <RefreshCw size={15} />
-                  <span>{resetting ? '...' : locale === 'ar' ? 'حفظ كلمة المرور' : 'Enregistrer'}</span>
+                  <span>{resetting ? '...' : locale === 'ar' ? 'حفظ كلمة المرور' : locale === 'en' ? 'Save Password' : 'Enregistrer'}</span>
                 </button>
               </div>
             </form>

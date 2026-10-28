@@ -190,7 +190,7 @@ export default function ScheduleManagePage() {
       );
 
       setAttendanceSuccessMsg(
-        locale === 'ar' ? 'تم تسجيل الحضور' : 'Présence enregistrée'
+        locale === 'ar' ? 'تم تسجيل الحضور' : locale === 'en' ? 'Attendance recorded' : 'Présence enregistrée'
       );
       setTimeout(() => setAttendanceSuccessMsg(''), 2000);
     } catch (err) {
@@ -220,7 +220,7 @@ export default function ScheduleManagePage() {
       );
 
       setAttendanceSuccessMsg(
-        locale === 'ar' ? 'تم تأكيد حضور الجميع' : 'Tous les étudiants marqués présents'
+        locale === 'ar' ? 'تم تأكيد حضور الجميع' : locale === 'en' ? 'All marked present' : 'Tous les étudiants marqués présents'
       );
       setTimeout(() => setAttendanceSuccessMsg(''), 2500);
     } catch (err) {
@@ -250,13 +250,15 @@ export default function ScheduleManagePage() {
           <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             {locale === 'ar'
               ? 'إدارة الأفواج المتتالية، جدول الحصص، وتتبع حضور الطلاب المؤكدين'
+              : locale === 'en'
+              ? 'Cohort management, session schedules, and student attendance tracking'
               : 'Gestion des cohortes successives, planning des séances et suivi des présences'}
           </p>
         </div>
 
         <button onClick={openAddModal} className="btn-primary btn-sm" style={{ gap: '0.4rem' }}>
           <Plus size={16} />
-          <span>{locale === 'ar' ? 'إطلاق فوج / برمجة حصة' : 'Lancer une Cohorte / Programmer'}</span>
+          <span>{locale === 'ar' ? 'إطلاق فوج / برمجة حصة' : locale === 'en' ? 'Launch Cohort / Schedule Session' : 'Lancer une Cohorte / Programmer'}</span>
         </button>
       </div>
 
@@ -278,7 +280,7 @@ export default function ScheduleManagePage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           <Filter size={16} color="#FA461D" />
           <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#3D1B0D', marginRight: '0.25rem' }}>
-            {locale === 'ar' ? 'تصفية الأفواج:' : 'Filtrer les cohortes :'}
+            {locale === 'ar' ? 'تصفية الأفواج:' : locale === 'en' ? 'Filter Cohorts:' : 'Filtrer les cohortes :'}
           </span>
 
           <button
@@ -295,7 +297,7 @@ export default function ScheduleManagePage() {
               color: statusFilter === 'all' ? '#FFFFFF' : '#6A564A',
             }}
           >
-            {locale === 'ar' ? `الكل (${sessions.length})` : `Tous (${sessions.length})`}
+            {locale === 'ar' ? `الكل (${sessions.length})` : locale === 'en' ? `All (${sessions.length})` : `Tous (${sessions.length})`}
           </button>
 
           <button
@@ -312,7 +314,7 @@ export default function ScheduleManagePage() {
               color: statusFilter === 'active' ? '#FFFFFF' : '#6A564A',
             }}
           >
-            🟢 {locale === 'ar' ? 'الأفواج الجارية' : 'En cours'}
+            🟢 {locale === 'ar' ? 'الأفواج الجارية' : locale === 'en' ? 'In Progress' : 'En cours'}
           </button>
 
           <button
@@ -329,7 +331,7 @@ export default function ScheduleManagePage() {
               color: statusFilter === 'scheduled' ? '#FFFFFF' : '#6A564A',
             }}
           >
-            🔵 {locale === 'ar' ? 'المجدولة' : 'Planifiées'}
+            🔵 {locale === 'ar' ? 'المجدولة' : locale === 'en' ? 'Scheduled' : 'Planifiées'}
           </button>
 
           <button
@@ -346,13 +348,15 @@ export default function ScheduleManagePage() {
               color: statusFilter === 'completed' ? '#FFFFFF' : '#6A564A',
             }}
           >
-            🎓 {locale === 'ar' ? 'المكتملة / المتخرجة' : 'Terminées'}
+            🎓 {locale === 'ar' ? 'المكتملة / المتخرجة' : locale === 'en' ? 'Completed' : 'Terminées'}
           </button>
         </div>
 
         <div style={{ fontSize: '0.82rem', color: '#8C6F5A' }}>
           {locale === 'ar'
             ? 'تأكيد تسجيل الطالب ينقله آلياً لقائمة أستاذ الدورة'
+            : locale === 'en'
+            ? 'Confirming a student automatically syncs them to the teacher roll call'
             : 'La confirmation d\'un étudiant le synchronise directement avec le formateur'}
         </div>
       </div>
@@ -362,20 +366,20 @@ export default function ScheduleManagePage() {
           <table className="table">
             <thead>
               <tr>
-                <th>{locale === 'ar' ? 'الفوج والحصة' : 'Cohorte & Séance'}</th>
-                <th>{locale === 'ar' ? 'تاريخ وتوقيت الانعقاد' : 'Date & Horaires'}</th>
-                <th>{locale === 'ar' ? 'الدورة واللغة' : 'Formation'}</th>
-                <th>{locale === 'ar' ? 'الأستاذ المشرف' : 'Formateur'}</th>
-                <th>{locale === 'ar' ? 'الطلاب المؤكدون' : 'Étudiants'}</th>
-                <th>{locale === 'ar' ? 'حالة الفوج' : 'Statut'}</th>
-                <th style={{ textAlign: 'right' }}>{locale === 'ar' ? 'الإجراءات' : 'Actions'}</th>
+                <th>{locale === 'ar' ? 'الفوج والحصة' : locale === 'en' ? 'Cohort & Session' : 'Cohorte & Séance'}</th>
+                <th>{locale === 'ar' ? 'تاريخ وتوقيت الانعقاد' : locale === 'en' ? 'Date & Timing' : 'Date & Horaires'}</th>
+                <th>{locale === 'ar' ? 'الدورة واللغة' : locale === 'en' ? 'Course & Language' : 'Formation'}</th>
+                <th>{locale === 'ar' ? 'الأستاذ المشرف' : locale === 'en' ? 'Faculty Lead' : 'Formateur'}</th>
+                <th>{locale === 'ar' ? 'الطلاب المؤكدون' : locale === 'en' ? 'Enrolled Students' : 'Étudiants'}</th>
+                <th>{locale === 'ar' ? 'حالة الفوج' : locale === 'en' ? 'Cohort Status' : 'Statut'}</th>
+                <th style={{ textAlign: 'right' }}>{locale === 'ar' ? 'الإجراءات' : locale === 'en' ? 'Actions' : 'Actions'}</th>
               </tr>
             </thead>
             <tbody>
               {filteredSessions.length === 0 ? (
                 <tr>
                   <td colSpan={7} style={{ textAlign: 'center', padding: '3rem 1rem', color: 'var(--text-muted)' }}>
-                    {locale === 'ar' ? 'لا توجد حصص في هذه الفئة' : 'Aucune séance trouvée dans cette catégorie'}
+                    {locale === 'ar' ? 'لا توجد حصص في هذه الفئة' : locale === 'en' ? 'No sessions scheduled in this filter' : 'Aucune séance trouvée dans cette catégorie'}
                   </td>
                 </tr>
               ) : (
@@ -402,7 +406,7 @@ export default function ScheduleManagePage() {
                             </span>
                           </div>
                           <p style={{ margin: 0, fontWeight: 800, fontSize: '0.92rem', color: 'var(--dark-brown)' }}>
-                            {locale === 'ar' ? s.title_ar : s.title_fr}
+                            {locale === 'ar' ? (s.title_ar || s.title_fr) : locale === 'en' ? (s.title_en || s.title_fr) : s.title_fr}
                           </p>
                         </div>
                       </td>
@@ -421,7 +425,9 @@ export default function ScheduleManagePage() {
                         <span className="badge badge-primary" style={{ marginBottom: '0.2rem' }}>
                           {s.language_name_fr}
                         </span>
-                        <p style={{ margin: 0, fontSize: '0.85rem' }}>{locale === 'ar' ? s.course_title_ar : s.course_title_fr}</p>
+                        <p style={{ margin: 0, fontSize: '0.85rem' }}>
+                          {locale === 'ar' ? s.course_title_ar : locale === 'en' ? (s.course_title_en || s.course_title_fr) : s.course_title_fr}
+                        </p>
                       </td>
                       <td>
                         <span style={{ fontWeight: 800, fontSize: '0.88rem', color: '#3D1B0D' }}>{s.teacher_name}</span>
@@ -442,7 +448,7 @@ export default function ScheduleManagePage() {
                           }}
                         >
                           <Users size={13} />
-                          {enrolledCount} {locale === 'ar' ? 'مؤكد' : 'confirmé(s)'}
+                          {enrolledCount} {locale === 'ar' ? 'مؤكد' : locale === 'en' ? 'confirmed' : 'confirmé(s)'}
                         </span>
                       </td>
                       <td>
@@ -470,9 +476,9 @@ export default function ScheduleManagePage() {
                             cursor: 'pointer',
                           }}
                         >
-                          <option value="scheduled">Planifiée / À venir</option>
-                          <option value="active">En cours / Actif</option>
-                          <option value="completed">Terminée / Clôturée</option>
+                          <option value="scheduled">{locale === 'ar' ? 'مجدولة / قادمة' : locale === 'en' ? 'Scheduled / Upcoming' : 'Planifiée / À venir'}</option>
+                          <option value="active">{locale === 'ar' ? 'جارية حالياً' : locale === 'en' ? 'Live / Active' : 'En cours / Actif'}</option>
+                          <option value="completed">{locale === 'ar' ? 'مكتملة ومختتمة' : locale === 'en' ? 'Completed / Closed' : 'Terminée / Clôturée'}</option>
                         </select>
                       </td>
                       <td style={{ textAlign: 'right' }}>
@@ -483,7 +489,7 @@ export default function ScheduleManagePage() {
                           style={{ gap: '0.35rem', fontSize: '0.78rem', padding: '0.35rem 0.65rem' }}
                         >
                           <UserCheck size={14} />
-                          <span>{locale === 'ar' ? 'حضور الفوج' : 'Présences'}</span>
+                          <span>{locale === 'ar' ? 'حضور الفوج' : locale === 'en' ? 'Roll Call' : 'Présences'}</span>
                         </button>
                       </td>
                     </tr>
@@ -502,11 +508,13 @@ export default function ScheduleManagePage() {
             <div className="modal-header">
               <div>
                 <h3 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 900 }}>
-                  {locale === 'ar' ? 'إطلاق فوج جديد وبرمجة حصة' : 'Lancer une Nouvelle Cohorte / Séance'}
+                  {locale === 'ar' ? 'إطلاق فوج جديد وبرمجة حصة' : locale === 'en' ? 'Launch New Cohort / Session' : 'Lancer une Nouvelle Cohorte / Séance'}
                 </h3>
                 <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                   {locale === 'ar'
                     ? 'حدد اسم الفوج ومواعيد الانعقاد والأستاذ المسؤول'
+                    : locale === 'en'
+                    ? 'Define cohort name, class timings, target course and faculty lead'
                     : 'Définissez le nom du groupe, la formation et l\'enseignant responsable'}
                 </p>
               </div>
@@ -531,7 +539,7 @@ export default function ScheduleManagePage() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 800, fontSize: '0.95rem', marginBottom: '0.4rem' }}>
                       <AlertTriangle size={18} />
-                      <span>{locale === 'ar' ? 'تحذير تضارب في جدول الأستاذ !' : 'Conflit d\'horaire détecté !'}</span>
+                      <span>{locale === 'ar' ? 'تحذير تضارب في جدول الأستاذ !' : locale === 'en' ? 'Faculty Schedule Conflict Detected!' : 'Conflit d\'horaire détecté !'}</span>
                     </div>
                     <p style={{ margin: 0, fontSize: '0.85rem' }}>{error}</p>
                   </div>
@@ -545,7 +553,7 @@ export default function ScheduleManagePage() {
 
                 {/* Cohort / Group Name */}
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'اسم الفوج / المجموعة' : 'Nom de la Cohorte / Groupe'} *</label>
+                  <label className="form-label">{locale === 'ar' ? 'اسم الفوج / المجموعة' : locale === 'en' ? 'Cohort / Group Name' : 'Nom de la Cohorte / Groupe'} *</label>
                   <input
                     type="text"
                     required
@@ -557,13 +565,15 @@ export default function ScheduleManagePage() {
                   <small style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>
                     {locale === 'ar'
                       ? 'عند انتهاء فوج معين، يمكن إنشاء فوج جديد لتدريس طلاب الدفعة القادمة'
+                      : locale === 'en'
+                      ? 'Allows launching subsequent cohorts once a student cycle is completed'
                       : 'Permet de gérer les roulements successifs lorsque les étudiants finissent leur cycle'}
                   </small>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'الدورة' : 'Formation'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'الدورة' : locale === 'en' ? 'Course' : 'Formation'} *</label>
                     <select
                       value={courseId}
                       onChange={(e) => setCourseId(e.target.value)}
@@ -572,14 +582,14 @@ export default function ScheduleManagePage() {
                     >
                       {courses.map((c) => (
                         <option key={c.id} value={c.id}>
-                          {c.flag_emoji} {c.title_fr}
+                          {c.flag_emoji} {locale === 'ar' ? c.title_ar : locale === 'en' ? (c.title_en || c.title_fr) : c.title_fr}
                         </option>
                       ))}
                     </select>
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'الأستاذ المشرف' : 'Formateur'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'الأستاذ المشرف' : locale === 'en' ? 'Faculty Lead' : 'Formateur'} *</label>
                     <select
                       value={teacherId}
                       onChange={(e) => setTeacherId(e.target.value)}
@@ -596,7 +606,7 @@ export default function ScheduleManagePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'عنوان الحصة بالفرنسية' : 'Titre de la séance'} *</label>
+                  <label className="form-label">{locale === 'ar' ? 'عنوان الحصة' : locale === 'en' ? 'Session Title' : 'Titre de la séance'} *</label>
                   <input
                     type="text"
                     required
@@ -608,7 +618,7 @@ export default function ScheduleManagePage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'وقت البداية' : 'Début'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'وقت البداية' : locale === 'en' ? 'Start Time' : 'Début'} *</label>
                     <input
                       type="datetime-local"
                       required
@@ -618,7 +628,7 @@ export default function ScheduleManagePage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'وقت النهاية' : 'Fin'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'وقت النهاية' : locale === 'en' ? 'End Time' : 'Fin'} *</label>
                     <input
                       type="datetime-local"
                       required
@@ -630,7 +640,7 @@ export default function ScheduleManagePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'رابط القاعة الافتراضية' : 'Lien visioconférence'}</label>
+                  <label className="form-label">{locale === 'ar' ? 'رابط القاعة الافتراضية' : locale === 'en' ? 'Virtual Meeting Link' : 'Lien visioconférence'}</label>
                   <input
                     type="url"
                     value={meetingUrl}
@@ -646,7 +656,7 @@ export default function ScheduleManagePage() {
                   {t('action_cancel')}
                 </button>
                 <button type="submit" disabled={submitting} className="btn-primary btn-sm">
-                  {submitting ? '...' : locale === 'ar' ? 'تأكيد وإطلاق الفوج' : 'Valider & Lancer'}
+                  {submitting ? '...' : locale === 'ar' ? 'تأكيد وإطلاق الفوج' : locale === 'en' ? 'Confirm & Launch Cohort' : 'Valider & Lancer'}
                 </button>
               </div>
             </form>
@@ -667,7 +677,7 @@ export default function ScheduleManagePage() {
                   </span>
                 </div>
                 <h3 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 900 }}>
-                  {locale === 'ar' ? 'سجل حضور وغياب الطلاب' : 'Feuille de Présence des Étudiants'}
+                  {locale === 'ar' ? 'سجل حضور وغياب الطلاب' : locale === 'en' ? 'Student Attendance Sheet' : 'Feuille de Présence des Étudiants'}
                 </h3>
                 <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                   {activeSession.title_fr} • 📅 {activeSession.start_time}
@@ -692,9 +702,9 @@ export default function ScheduleManagePage() {
               }}
             >
               <div style={{ display: 'flex', gap: '0.6rem', fontSize: '0.8rem', fontWeight: 800 }}>
-                <span style={{ color: '#2E7D32' }}>✓ Présents : {presentCount}</span>
-                <span style={{ color: '#C62828' }}>✕ Absents : {absentCount}</span>
-                <span style={{ color: '#D97706' }}>⏳ Retards : {lateCount}</span>
+                <span style={{ color: '#2E7D32' }}>✓ {locale === 'ar' ? 'حاضرون' : locale === 'en' ? 'Present' : 'Présents'} : {presentCount}</span>
+                <span style={{ color: '#C62828' }}>✕ {locale === 'ar' ? 'غائبون' : locale === 'en' ? 'Absent' : 'Absents'} : {absentCount}</span>
+                <span style={{ color: '#D97706' }}>⏳ {locale === 'ar' ? 'متأخرون' : locale === 'en' ? 'Late' : 'Retards'} : {lateCount}</span>
               </div>
 
               <button
@@ -716,7 +726,7 @@ export default function ScheduleManagePage() {
                 }}
               >
                 <Check size={14} />
-                <span>{locale === 'ar' ? 'تأكيد حضور الجميع' : 'Tout marquer Présent'}</span>
+                <span>{locale === 'ar' ? 'تأكيد حضور الجميع' : locale === 'en' ? 'Mark All Present' : 'Tout marquer Présent'}</span>
               </button>
             </div>
 
@@ -728,16 +738,18 @@ export default function ScheduleManagePage() {
 
             <div className="modal-body">
               {loadingAttendance ? (
-                <div style={{ textAlign: 'center', padding: '2rem 0' }}>{locale === 'ar' ? 'جاري التحميل...' : 'Chargement...'}</div>
+                <div style={{ textAlign: 'center', padding: '2rem 0' }}>{locale === 'ar' ? 'جاري التحميل...' : locale === 'en' ? 'Loading roll call...' : 'Chargement...'}</div>
               ) : attendanceRecords.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '2.5rem 0', color: 'var(--text-muted)' }}>
                   <Users size={32} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
                   <p style={{ margin: 0, fontWeight: 700 }}>
-                    {locale === 'ar' ? 'لا يوجد طلاب مؤكدون في هذا الكورس حالياً.' : 'Aucun étudiant confirmé dans ce cours.'}
+                    {locale === 'ar' ? 'لا يوجد طلاب مؤكدون في هذا الكورس حالياً.' : locale === 'en' ? 'No confirmed students in this course yet.' : 'Aucun étudiant confirmé dans ce cours.'}
                   </p>
                   <small>
                     {locale === 'ar'
                       ? 'قم بتأكيد تسجيل الطالب من قسم «الطلاب» وسيظهر هنا تلقائياً'
+                      : locale === 'en'
+                      ? 'Confirm student registrations from the Students section to display them here'
                       : 'Validez les inscriptions depuis la section Étudiants pour les faire apparaître ici'}
                   </small>
                 </div>
@@ -800,7 +812,7 @@ export default function ScheduleManagePage() {
                             className={rec.attendance_status === 'present' ? 'badge badge-success' : 'btn-outline btn-sm'}
                             style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}
                           >
-                            ✓ {locale === 'ar' ? 'حاضر' : 'Présent'}
+                            ✓ {locale === 'ar' ? 'حاضر' : locale === 'en' ? 'Present' : 'Présent'}
                           </button>
                           <button
                             type="button"
@@ -808,7 +820,7 @@ export default function ScheduleManagePage() {
                             className={rec.attendance_status === 'late' ? 'badge badge-warning' : 'btn-outline btn-sm'}
                             style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}
                           >
-                            ⏳ {locale === 'ar' ? 'متأخر' : 'Retard'}
+                            ⏳ {locale === 'ar' ? 'متأخر' : locale === 'en' ? 'Late' : 'Retard'}
                           </button>
                           <button
                             type="button"
@@ -816,7 +828,7 @@ export default function ScheduleManagePage() {
                             className={rec.attendance_status === 'excused' ? 'badge badge-primary' : 'btn-outline btn-sm'}
                             style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}
                           >
-                            ℹ️ {locale === 'ar' ? 'معذور' : 'Excusé'}
+                            ℹ️ {locale === 'ar' ? 'معذور' : locale === 'en' ? 'Excused' : 'Excusé'}
                           </button>
                           <button
                             type="button"
@@ -824,7 +836,7 @@ export default function ScheduleManagePage() {
                             className={rec.attendance_status === 'absent' ? 'badge badge-danger' : 'btn-outline btn-sm'}
                             style={{ padding: '0.35rem 0.65rem', fontSize: '0.78rem' }}
                           >
-                            ✕ {locale === 'ar' ? 'غائب' : 'Absent'}
+                            ✕ {locale === 'ar' ? 'غائب' : locale === 'en' ? 'Absent' : 'Absent'}
                           </button>
                         </div>
                       </div>
@@ -836,7 +848,7 @@ export default function ScheduleManagePage() {
 
             <div className="modal-footer">
               <button onClick={() => setAttendanceModalOpen(false)} className="btn-primary btn-sm">
-                {locale === 'ar' ? 'إغلاق وحفظ' : 'Fermer & Enregistrer'}
+                {locale === 'ar' ? 'إغلاق وحفظ' : locale === 'en' ? 'Close & Save' : 'Fermer & Enregistrer'}
               </button>
             </div>
           </div>

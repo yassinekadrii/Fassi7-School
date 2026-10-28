@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { Clock, Users, ArrowRight, ArrowLeft, Check, Sparkles, GraduationCap } from 'lucide-react';
+import { Clock, Users, ArrowRight, ArrowLeft, Check, Sparkles } from 'lucide-react';
 import {
   getLocalizedCourseTitle,
   getLocalizedCourseDesc,
@@ -112,30 +112,6 @@ export function CourseCard({ course, onEnroll }: CourseCardProps) {
           {description}
         </p>
 
-        {/* Assigned Teacher Badge */}
-        {course.teachers && course.teachers.length > 0 ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-              marginBottom: '1.1rem',
-              padding: '0.4rem 0.65rem',
-              backgroundColor: '#ECFDF5',
-              border: '1px solid #A7F3D0',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '0.8rem',
-              color: '#065F46',
-              fontWeight: 700,
-            }}
-          >
-            <GraduationCap size={15} color="#059669" style={{ flexShrink: 0 }} />
-            <span>
-              {locale === 'ar' ? 'الأستاذ: ' : locale === 'en' ? 'Teacher: ' : 'Formateur : '}
-              <strong>{course.teachers.map((t: any) => t.name).join(', ')}</strong>
-            </span>
-          </div>
-        ) : null}
 
         {/* Highlights: Duration, Hours, Format */}
         <div

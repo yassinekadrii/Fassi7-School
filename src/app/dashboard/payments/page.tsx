@@ -15,6 +15,8 @@ import {
   CreditCard,
   FileSpreadsheet,
 } from 'lucide-react';
+import { ExportDropdown } from '@/components/ExportDropdown';
+import { exportTableToPDF } from '@/lib/exportHelpers';
 
 export default function PaymentsManagePage() {
   const { t, locale } = useLanguage();
@@ -123,7 +125,7 @@ export default function PaymentsManagePage() {
       p.status,
     ]);
 
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
@@ -131,6 +133,73 @@ export default function PaymentsManagePage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const getMethodLabel = (m: string) => {
+    switch (m) {
+      case 'baridimob':
+        return t('pay_baridimob');
+      case 'ccp':
+        return t('pay_ccp');
+      case 'bank_transfer':
+        return t('pay_bank');
+      case 'cash':
+        return t('pay_cash');
+      case 'card':
+        return t('pay_card');
+      default:
+        return m;
+    }
+  };
+
+  const exportToPDF = () => {
+    const headers = [
+      locale === 'ar' ? 'رقم الوصل' : locale === 'en' ? 'Receipt #' : 'N° Reçu',
+      locale === 'ar' ? 'الطالب' : locale === 'en' ? 'Student' : 'Apprenant',
+      locale === 'ar' ? 'الدورة' : locale === 'en' ? 'Course' : 'Formation',
+      locale === 'ar' ? 'المبلغ (دج)' : locale === 'en' ? 'Amount (DZD)' : 'Montant (DZD)',
+      locale === 'ar' ? 'طريقة الدفع' : locale === 'en' ? 'Payment Method' : 'Mode Paiement',
+      locale === 'ar' ? 'الرقم المرجعي' : locale === 'en' ? 'Reference' : 'Référence',
+      locale === 'ar' ? 'التاريخ' : locale === 'en' ? 'Date' : 'Date',
+      locale === 'ar' ? 'الحالة' : locale === 'en' ? 'Status' : 'Statut'
+    ];
+
+    const totalAmount = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+
+    const rows = payments.map((p) => [
+      p.receipt_number || '—',
+      { content: p.student_name || '—', align: locale === 'ar' ? 'right' : 'left' as const },
+      (locale === 'ar' ? p.course_title_ar : locale === 'en' ? p.course_title_en : p.course_title_fr) || p.course_title_fr || p.course_title_en || '—',
+      { content: (p.amount || 0).toLocaleString(), align: 'right' as const },
+      getMethodLabel(p.payment_method),
+      p.reference_number || '—',
+      p.payment_date || '—',
+      {
+        content: p.status === 'completed' || p.status === 'paid'
+          ? (locale === 'ar' ? 'مقبول / مسدد' : locale === 'en' ? 'Paid / Validated' : 'Validé')
+          : p.status,
+        badge: (p.status === 'completed' || p.status === 'paid' ? 'success' : 'warning') as 'success' | 'warning'
+      }
+    ]);
+
+    exportTableToPDF({
+      title: locale === 'ar' ? 'سجل المقابيض والمدفوعات الرسمية' : locale === 'en' ? 'Official Payment & Revenue Register' : 'Journal Officiel des Encaissements et Règlements',
+      subtitle: locale === 'ar' ? `إجمالي ${payments.length} عملية دفع مسجلة` : locale === 'en' ? `Total of ${payments.length} recorded transactions` : `${payments.length} transactions enregistrées au total`,
+      docReference: `FS-PAY-${new Date().getFullYear()}`,
+      locale,
+      orientation: 'landscape',
+      summaryPills: [
+        { label: locale === 'ar' ? 'إجمالي المعاملات' : locale === 'en' ? 'Total Transactions' : 'Total Opérations', value: payments.length },
+        { label: locale === 'ar' ? 'إجمالي المقابيض' : locale === 'en' ? 'Total Revenue' : 'Total Recettes', value: `${totalAmount.toLocaleString()} DZD`, color: '#16A34A' }
+      ],
+      headers,
+      rows,
+      notes: locale === 'ar'
+        ? 'هذا المستند معتمد محاسبياً من مصلحة المالية لأكاديمية فصيح للغات.'
+        : locale === 'en'
+        ? 'Official accounting document certified by Fassi7 Language Academy finance department.'
+        : 'Document comptable certifié par le service financier de l\'Académie Fassi7.'
+    });
   };
 
   const getMethodBadge = (m: string) => {
@@ -160,18 +229,20 @@ export default function PaymentsManagePage() {
           <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             {locale === 'ar'
               ? 'متابعة المقابيض، إصدار الوصولات الرسمية، وتصدير التقارير المالية'
+              : locale === 'en'
+              ? 'Revenue tracking, official receipt issuance, and financial reporting'
               : 'Encaissements, émission des reçus officiels et suivi comptable'}
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <button onClick={exportToCSV} className="btn-outline btn-sm">
-            <FileSpreadsheet size={15} color="#10B981" />
-            <span>{t('action_export_csv')}</span>
-          </button>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <ExportDropdown
+            onExportCSV={exportToCSV}
+            onExportPDF={exportToPDF}
+          />
           <button onClick={openAddModal} className="btn-primary btn-sm">
             <Plus size={16} />
-            <span>{locale === 'ar' ? 'تسجيل دفعة جديدة' : 'Nouvel encaissement'}</span>
+            <span>{locale === 'ar' ? 'تسجيل دفعة جديدة' : locale === 'en' ? 'Record New Payment' : 'Nouvel encaissement'}</span>
           </button>
         </div>
       </div>
@@ -193,16 +264,16 @@ export default function PaymentsManagePage() {
             {stats.total_revenue?.toLocaleString()} {t('price_dzd')}
           </div>
           <span style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 700, display: 'block', marginTop: '0.2rem' }}>
-            {stats.total_transactions} {locale === 'ar' ? 'معاملة مسجلة' : 'transactions'}
+            {stats.total_transactions} {locale === 'ar' ? 'معاملة مسجلة' : locale === 'en' ? 'transactions' : 'transactions'}
           </span>
         </div>
 
         <div className="card">
           <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-            {locale === 'ar' ? 'المدفوعات عبر بريدي موب' : 'Encaissements BaridiMob'}
+            {locale === 'ar' ? 'المدفوعات عبر بريدي موب' : locale === 'en' ? 'BaridiMob Payments' : 'Encaissements BaridiMob'}
           </span>
           <div style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--dark-brown)', marginTop: '0.3rem' }}>
-            {locale === 'ar' ? 'الأكثر استخداماً' : 'Préféré par les élèves'}
+            {locale === 'ar' ? 'الأكثر استخداماً' : locale === 'en' ? 'Most Popular' : 'Préféré par les élèves'}
           </div>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginTop: '0.2rem' }}>
             Algérie Poste • CCP
@@ -211,13 +282,13 @@ export default function PaymentsManagePage() {
 
         <div className="card">
           <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-            {locale === 'ar' ? 'إجمالي الوصولات الصادرة' : 'Reçus Officiels Émis'}
+            {locale === 'ar' ? 'إجمالي الوصولات الصادرة' : locale === 'en' ? 'Official Receipts Issued' : 'Reçus Officiels Émis'}
           </span>
           <div style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--dark-brown)', marginTop: '0.3rem' }}>
             {payments.length}
           </div>
           <span style={{ fontSize: '0.75rem', color: '#10B981', fontWeight: 700, display: 'block', marginTop: '0.2rem' }}>
-            {locale === 'ar' ? 'معتمدة محاسبياً' : 'Certifiés conformes'}
+            {locale === 'ar' ? 'معتمدة محاسبياً' : locale === 'en' ? 'Certified conform' : 'Certifiés conformes'}
           </span>
         </div>
       </div>
@@ -228,13 +299,13 @@ export default function PaymentsManagePage() {
           <table className="table">
             <thead>
               <tr>
-                <th>{locale === 'ar' ? 'رقم الوصل' : 'N° Reçu'}</th>
-                <th>{locale === 'ar' ? 'الطالب' : 'Étudiant'}</th>
-                <th>{locale === 'ar' ? 'الدورة' : 'Formation'}</th>
-                <th>{locale === 'ar' ? 'المبلغ' : 'Montant'}</th>
-                <th>{locale === 'ar' ? 'طريقة الدفع' : 'Moyen de paiement'}</th>
-                <th>{locale === 'ar' ? 'التاريخ' : 'Date'}</th>
-                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'الوصل' : 'Reçu'}</th>
+                <th>{locale === 'ar' ? 'رقم الوصل' : locale === 'en' ? 'Receipt #' : 'N° Reçu'}</th>
+                <th>{locale === 'ar' ? 'الطالب' : locale === 'en' ? 'Student' : 'Étudiant'}</th>
+                <th>{locale === 'ar' ? 'الدورة' : locale === 'en' ? 'Course' : 'Formation'}</th>
+                <th>{locale === 'ar' ? 'المبلغ' : locale === 'en' ? 'Amount' : 'Montant'}</th>
+                <th>{locale === 'ar' ? 'طريقة الدفع' : locale === 'en' ? 'Payment Method' : 'Moyen de paiement'}</th>
+                <th>{locale === 'ar' ? 'التاريخ' : locale === 'en' ? 'Date' : 'Date'}</th>
+                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'الوصل' : locale === 'en' ? 'Receipt' : 'Reçu'}</th>
               </tr>
             </thead>
             <tbody>
@@ -252,7 +323,9 @@ export default function PaymentsManagePage() {
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{p.student_phone}</span>
                   </td>
                   <td>
-                    <p style={{ margin: 0, fontSize: '0.85rem' }}>{locale === 'ar' ? p.course_title_ar : p.course_title_fr}</p>
+                    <p style={{ margin: 0, fontSize: '0.85rem' }}>
+                      {locale === 'ar' ? p.course_title_ar : locale === 'en' ? (p.course_title_en || p.course_title_fr) : p.course_title_fr}
+                    </p>
                   </td>
                   <td>
                     <span style={{ fontWeight: 900, fontSize: '1rem', color: 'var(--dark-brown)' }}>
@@ -269,7 +342,7 @@ export default function PaymentsManagePage() {
                   </td>
                   <td>
                     <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                      {new Date(p.payment_date).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : 'fr-FR')}
+                      {new Date(p.payment_date).toLocaleDateString(locale === 'ar' ? 'ar-DZ' : locale === 'en' ? 'en-US' : 'fr-FR')}
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
@@ -298,7 +371,7 @@ export default function PaymentsManagePage() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '560px' }}>
             <div className="modal-header">
               <h3 style={{ fontSize: '1.25rem', margin: 0 }}>
-                {locale === 'ar' ? 'تسجيل دفعة مالية وإصدار وصل' : 'Encaisser un Paiement'}
+                {locale === 'ar' ? 'تسجيل دفعة مالية وإصدار وصل' : locale === 'en' ? 'Record Payment & Issue Receipt' : 'Encaisser un Paiement'}
               </h3>
               <button onClick={() => setIsModalOpen(false)} style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
@@ -314,7 +387,7 @@ export default function PaymentsManagePage() {
                 )}
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'الطالب المستفيد' : 'Étudiant'} *</label>
+                  <label className="form-label">{locale === 'ar' ? 'الطالب المستفيد' : locale === 'en' ? 'Student' : 'Étudiant'} *</label>
                   <select
                     value={studentId}
                     onChange={(e) => setStudentId(e.target.value)}
@@ -330,7 +403,7 @@ export default function PaymentsManagePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'الدورة التدريبية' : 'Formation'} *</label>
+                  <label className="form-label">{locale === 'ar' ? 'الدورة التدريبية' : locale === 'en' ? 'Course' : 'Formation'} *</label>
                   <select
                     value={courseId}
                     onChange={(e) => setCourseId(e.target.value)}
@@ -339,7 +412,7 @@ export default function PaymentsManagePage() {
                   >
                     {courses.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.title_fr} ({c.price} DZD)
+                        {locale === 'ar' ? c.title_ar : locale === 'en' ? (c.title_en || c.title_fr) : c.title_fr} ({c.price} DZD)
                       </option>
                     ))}
                   </select>
@@ -347,7 +420,7 @@ export default function PaymentsManagePage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'المبلغ المستلم (دج)' : 'Montant Réglé (DZD)'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'المبلغ المستلم (دج)' : locale === 'en' ? 'Amount Received (DZD)' : 'Montant Réglé (DZD)'} *</label>
                     <input
                       type="number"
                       required
@@ -358,23 +431,23 @@ export default function PaymentsManagePage() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'طريقة الدفع' : 'Mode de Paiement'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'طريقة الدفع' : locale === 'en' ? 'Payment Method' : 'Mode de Paiement'} *</label>
                     <select
                       value={method}
                       onChange={(e) => setMethod(e.target.value)}
                       className="form-select"
                     >
-                      <option value="baridimob">بريدي موب (BaridiMob)</option>
-                      <option value="ccp">حوالة بريدية (CCP)</option>
-                      <option value="bank_transfer">تحويل بنكي</option>
-                      <option value="cash">نقداً بالمقر</option>
-                      <option value="card">بطاقة CIB / الذهبية</option>
+                      <option value="baridimob">{locale === 'ar' ? 'بريدي موب (BaridiMob)' : locale === 'en' ? 'BaridiMob' : 'BaridiMob'}</option>
+                      <option value="ccp">{locale === 'ar' ? 'حوالة بريدية (CCP)' : locale === 'en' ? 'Postal Transfer (CCP)' : 'Virement postal (CCP)'}</option>
+                      <option value="bank_transfer">{locale === 'ar' ? 'تحويل بنكي' : locale === 'en' ? 'Bank Transfer' : 'Virement bancaire'}</option>
+                      <option value="cash">{locale === 'ar' ? 'نقداً بالمقر' : locale === 'en' ? 'Cash at front desk' : 'Espèces à l\'accueil'}</option>
+                      <option value="card">{locale === 'ar' ? 'بطاقة CIB / الذهبية' : locale === 'en' ? 'CIB / Edahabia Card' : 'Carte CIB / Edahabia'}</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'رقم الحوالة / المرجع' : 'N° Transaction / Référence'}</label>
+                  <label className="form-label">{locale === 'ar' ? 'رقم الحوالة / المرجع' : locale === 'en' ? 'Transaction # / Ref' : 'N° Transaction / Référence'}</label>
                   <input
                     type="text"
                     value={reference}
@@ -385,10 +458,10 @@ export default function PaymentsManagePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'ملاحظات المحاسبة' : 'Notes comptables'}</label>
+                  <label className="form-label">{locale === 'ar' ? 'ملاحظات المحاسبة' : locale === 'en' ? 'Accounting Notes' : 'Notes comptables'}</label>
                   <textarea
                     rows={2}
-                    placeholder={locale === 'ar' ? 'دفعة كاملة أو قسط أول...' : 'Acompte ou règlement total...'}
+                    placeholder={locale === 'ar' ? 'دفعة كاملة أو قسط أول...' : locale === 'en' ? 'Full payment or initial deposit...' : 'Acompte ou règlement total...'}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     className="form-textarea"
@@ -401,7 +474,7 @@ export default function PaymentsManagePage() {
                   {t('action_cancel')}
                 </button>
                 <button type="submit" disabled={submitting} className="btn-primary btn-sm">
-                  {submitting ? '...' : locale === 'ar' ? 'تأكيد وإصدار الوصل' : 'Valider & Émettre le Reçu'}
+                  {submitting ? '...' : locale === 'ar' ? 'تأكيد وإصدار الوصل' : locale === 'en' ? 'Confirm & Issue Receipt' : 'Valider & Émettre le Reçu'}
                 </button>
               </div>
             </form>

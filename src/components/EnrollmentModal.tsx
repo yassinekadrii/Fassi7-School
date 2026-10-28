@@ -217,7 +217,7 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
                   }}
                 >
                   <span>📸</span>
-                  <span>{locale === 'ar' ? 'رسالة إنستغرام (DM)' : 'Instagram DM'}</span>
+                  <span>{locale === 'ar' ? 'رسالة إنستغرام (DM)' : locale === 'en' ? 'Instagram DM' : 'Message Instagram (DM)'}</span>
                 </a>
 
                 <a
@@ -240,7 +240,7 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
                   }}
                 >
                   <span>💬</span>
-                  <span>{locale === 'ar' ? 'تأكيد عبر واتساب' : 'WhatsApp'}</span>
+                  <span>{locale === 'ar' ? 'تأكيد عبر واتساب' : locale === 'en' ? 'Confirm via WhatsApp' : 'Confirmer via WhatsApp'}</span>
                 </a>
               </div>
 
@@ -258,7 +258,7 @@ export function EnrollmentModal({ isOpen, onClose, course, coursesList = EMPTY_C
               >
                 <div style={{ fontWeight: 800, color: 'var(--primary)', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   <span>💳</span>
-                  <span>{locale === 'ar' ? 'بيانات الدفع الرسمية (BaridiMob / CCP):' : 'Official Payment Details (BaridiMob & CCP):'}</span>
+                  <span>{locale === 'ar' ? 'بيانات الدفع الرسمية (BaridiMob / CCP):' : locale === 'en' ? 'Official Payment Details (BaridiMob & CCP):' : 'Coordonnées de Paiement Officielles (BaridiMob / CCP) :'}</span>
                 </div>
                 <div style={{ marginBottom: '0.4rem' }}>
                   <strong>BaridiMob RIP:</strong> <code style={{ backgroundColor: '#FFFFFF', padding: '2px 6px', borderRadius: '4px', fontWeight: 800 }}>007 99999 00012345678 90</code>

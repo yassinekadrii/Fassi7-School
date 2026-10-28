@@ -102,7 +102,7 @@ export function Navbar() {
     },
     {
       href: '/contact',
-      label: locale === 'ar' ? 'اتصل بنا' : 'Contact',
+      label: locale === 'ar' ? 'اتصل بنا' : locale === 'en' ? 'Contact' : 'Contact',
       icon: Mail,
     },
   ];
@@ -547,7 +547,7 @@ export function Navbar() {
                               className="dropdown-hover-item"
                             >
                               <Shield size={15} color="var(--primary)" />
-                              <span>{locale === 'ar' ? 'حسابات السكرتارية' : 'Comptes Secrétariat'}</span>
+                              <span>{locale === 'ar' ? 'حسابات السكرتارية' : locale === 'en' ? 'Staff Accounts' : 'Comptes Secrétariat'}</span>
                             </Link>
                           )}
                           <Link
@@ -730,7 +730,7 @@ export function Navbar() {
                     className="btn-primary btn-sm"
                     style={{ fontSize: '0.78rem', padding: '0.4rem 0.75rem' }}
                   >
-                    {user.role === 'teacher' ? (locale === 'ar' ? 'فضاء الأستاذ' : 'Espace Prof') : t('nav_dashboard')}
+                    {user.role === 'teacher' ? (locale === 'ar' ? 'فضاء الأستاذ' : locale === 'en' ? 'Teacher Portal' : 'Espace Prof') : t('nav_dashboard')}
                   </Link>
               </div>
             )}

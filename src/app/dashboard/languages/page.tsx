@@ -134,11 +134,13 @@ export default function LanguagesManagePage() {
     if (lang.course_count > 0) {
       if (!confirm(locale === 'ar' 
         ? `تنبيه: هذه اللغة مرتبطة بـ (${lang.course_count}) دورات نشطة. هل أنت متأكد من أرشفتها بأمان؟` 
+        : locale === 'en'
+        ? `Warning: This language has (${lang.course_count}) active courses. Confirm archiving?`
         : `Attention: Cette langue a ${lang.course_count} cours associés. Confirmer l'archivage ?`)) {
         return;
       }
     } else {
-      if (!confirm(locale === 'ar' ? 'هل أنت متأكد من أرشفة هذه اللغة؟' : 'Confirmer l\'archivage ?')) return;
+      if (!confirm(locale === 'ar' ? 'هل أنت متأكد من أرشفة هذه اللغة؟' : locale === 'en' ? 'Confirm archiving this language?' : 'Confirmer l\'archivage ?')) return;
     }
 
     try {
@@ -166,13 +168,15 @@ export default function LanguagesManagePage() {
           <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             {locale === 'ar'
               ? 'إدارة لغات التدريس المعتمدة، نصوص الوصف، وحالة النشر'
+              : locale === 'en'
+              ? 'Instruction languages, descriptions, visibility and publishing status'
               : 'Gestion des langues d\'enseignement, visibilité et descriptifs'}
           </p>
         </div>
 
         <button onClick={openAddModal} className="btn-primary btn-sm">
           <Plus size={16} />
-          <span>{locale === 'ar' ? 'إضافة لغة جديدة' : 'Ajouter une langue'}</span>
+          <span>{locale === 'ar' ? 'إضافة لغة جديدة' : locale === 'en' ? '+ New Language' : 'Ajouter une langue'}</span>
         </button>
       </div>
 
@@ -181,12 +185,12 @@ export default function LanguagesManagePage() {
           <table className="table">
             <thead>
               <tr>
-                <th>{locale === 'ar' ? 'اللغة' : 'Langue'}</th>
-                <th>{locale === 'ar' ? 'الرمز' : 'Code'}</th>
-                <th>{locale === 'ar' ? 'الدورات المرتبطة' : 'Cours'}</th>
-                <th>{locale === 'ar' ? 'الأساتذة' : 'Formateurs'}</th>
-                <th>{locale === 'ar' ? 'حالة النشر' : 'Statut'}</th>
-                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'إجراءات' : 'Actions'}</th>
+                <th>{locale === 'ar' ? 'اللغة' : locale === 'en' ? 'Language' : 'Langue'}</th>
+                <th>{locale === 'ar' ? 'الرمز' : locale === 'en' ? 'Code' : 'Code'}</th>
+                <th>{locale === 'ar' ? 'الدورات المرتبطة' : locale === 'en' ? 'Courses' : 'Cours'}</th>
+                <th>{locale === 'ar' ? 'الأساتذة' : locale === 'en' ? 'Faculty' : 'Formateurs'}</th>
+                <th>{locale === 'ar' ? 'حالة النشر' : locale === 'en' ? 'Status' : 'Statut'}</th>
+                <th style={{ textAlign: 'center' }}>{locale === 'ar' ? 'إجراءات' : locale === 'en' ? 'Actions' : 'Actions'}</th>
               </tr>
             </thead>
             <tbody>
@@ -197,7 +201,7 @@ export default function LanguagesManagePage() {
                       <span style={{ fontSize: '1.6rem' }}>{lang.flag_emoji || '🌐'}</span>
                       <div>
                         <p style={{ margin: 0, fontWeight: 800, fontSize: '0.95rem', color: 'var(--dark-brown)' }}>
-                          {locale === 'ar' ? lang.name_ar : lang.name_fr}
+                          {locale === 'ar' ? lang.name_ar : locale === 'en' ? (lang.name_en || lang.name_fr) : lang.name_fr}
                         </p>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                           {locale === 'ar' ? lang.name_fr : lang.name_ar}
@@ -212,12 +216,12 @@ export default function LanguagesManagePage() {
                   </td>
                   <td>
                     <span className="badge badge-secondary">
-                      {lang.course_count} {locale === 'ar' ? 'دورات' : 'cours'}
+                      {lang.course_count} {locale === 'ar' ? 'دورات' : locale === 'en' ? 'courses' : 'cours'}
                     </span>
                   </td>
                   <td>
                     <span className="badge badge-dark">
-                      {lang.teacher_count} {locale === 'ar' ? 'أساتذة' : 'profs'}
+                      {lang.teacher_count} {locale === 'ar' ? 'أساتذة' : locale === 'en' ? 'teachers' : 'profs'}
                     </span>
                   </td>
                   <td>
@@ -225,17 +229,17 @@ export default function LanguagesManagePage() {
                       onClick={() => handleTogglePublish(lang)}
                       className={lang.is_published ? 'badge badge-success' : 'badge badge-danger'}
                       style={{ cursor: 'pointer' }}
-                      title={locale === 'ar' ? 'انقر لتغيير حالة النشر' : 'Cliquer pour modifier la visibilité'}
+                      title={locale === 'ar' ? 'انقر لتغيير حالة النشر' : locale === 'en' ? 'Click to toggle visibility' : 'Cliquer pour modifier la visibilité'}
                     >
                       {lang.is_published ? (
                         <>
                           <CheckCircle size={12} />
-                          <span>{locale === 'ar' ? 'منشورة' : 'Publié'}</span>
+                          <span>{locale === 'ar' ? 'منشورة' : locale === 'en' ? 'Published' : 'Publié'}</span>
                         </>
                       ) : (
                         <>
                           <XCircle size={12} />
-                          <span>{locale === 'ar' ? 'مسودة / مخفية' : 'Brouillon'}</span>
+                          <span>{locale === 'ar' ? 'مسودة / مخفية' : locale === 'en' ? 'Draft / Hidden' : 'Brouillon'}</span>
                         </>
                       )}
                     </button>
@@ -274,8 +278,8 @@ export default function LanguagesManagePage() {
             <div className="modal-header">
               <h3 style={{ fontSize: '1.25rem', margin: 0 }}>
                 {editingLang
-                  ? locale === 'ar' ? 'تعديل بيانات اللغة' : 'Modifier la langue'
-                  : locale === 'ar' ? 'إضافة لغة تدريس جديدة' : 'Ajouter une langue'}
+                  ? (locale === 'ar' ? 'تعديل بيانات اللغة' : locale === 'en' ? 'Edit Language' : 'Modifier la langue')
+                  : (locale === 'ar' ? 'إضافة لغة تدريس جديدة' : locale === 'en' ? 'Add New Language' : 'Ajouter une langue')}
               </h3>
               <button onClick={() => setIsModalOpen(false)} style={{ color: 'var(--text-muted)' }}>
                 <X size={20} />
@@ -292,7 +296,7 @@ export default function LanguagesManagePage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'الاسم بالعربية' : 'Nom en Arabe'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'الاسم بالعربية' : locale === 'en' ? 'Name (Arabic)' : 'Nom en Arabe'} *</label>
                     <input
                       type="text"
                       required
@@ -303,7 +307,7 @@ export default function LanguagesManagePage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'الاسم بالفرنسية' : 'Nom en Français'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'الاسم بالفرنسية' : locale === 'en' ? 'Name (French)' : 'Nom en Français'} *</label>
                     <input
                       type="text"
                       required
@@ -317,7 +321,7 @@ export default function LanguagesManagePage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'الرمز (2-3 أحرف)' : 'Code'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'الرمز (2-3 أحرف)' : locale === 'en' ? 'Code' : 'Code'} *</label>
                     <input
                       type="text"
                       required
@@ -328,7 +332,7 @@ export default function LanguagesManagePage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'الرابط (Slug)' : 'Slug'} *</label>
+                    <label className="form-label">{locale === 'ar' ? 'الرابط (Slug)' : locale === 'en' ? 'URL Slug' : 'Slug'} *</label>
                     <input
                       type="text"
                       required
@@ -339,7 +343,7 @@ export default function LanguagesManagePage() {
                     />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">{locale === 'ar' ? 'العلم (Emoji)' : 'Drapeau'}</label>
+                    <label className="form-label">{locale === 'ar' ? 'العلم (Emoji)' : locale === 'en' ? 'Flag Emoji' : 'Drapeau'}</label>
                     <input
                       type="text"
                       placeholder="🇬🇧"
@@ -351,7 +355,7 @@ export default function LanguagesManagePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">الوصف بالعربية</label>
+                  <label className="form-label">{locale === 'ar' ? 'الوصف بالعربية' : locale === 'en' ? 'Description (Arabic)' : 'Description en Arabe'}</label>
                   <textarea
                     rows={2}
                     placeholder="مناهج تدريبية معتمدة وفق الإطار الأوروبي المشترك للغات..."
@@ -373,7 +377,7 @@ export default function LanguagesManagePage() {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">{locale === 'ar' ? 'الوصف بالفرنسية' : 'Description en Français'}</label>
+                  <label className="form-label">{locale === 'ar' ? 'الوصف بالفرنسية' : locale === 'en' ? 'French Description' : 'Description en Français'}</label>
                   <textarea
                     rows={2}
                     placeholder="Programmes linguistiques d'excellence alignés sur les standards internationaux..."

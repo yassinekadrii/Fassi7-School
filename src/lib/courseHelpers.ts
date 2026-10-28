@@ -79,3 +79,24 @@ export function getLocalizedLangDesc(lang: any, locale: Locale): string {
   if (locale === 'en') return lang.description_en || lang.description_fr || '';
   return lang.description_fr || lang.description_ar || '';
 }
+
+export function getLocalizedTeacherBio(teacher: any, locale: Locale): string {
+  if (!teacher) return '';
+  if (locale === 'ar') return teacher.bio_ar || teacher.bio_fr || '';
+  if (locale === 'en') return teacher.bio_en || teacher.bio_fr || '';
+  return teacher.bio_fr || teacher.bio_ar || '';
+}
+
+export function getLocalizedTeacherQuals(teacher: any, locale: Locale): string {
+  if (!teacher) return '';
+  if (locale === 'ar') return teacher.qualifications_ar || teacher.qualifications_fr || '';
+  if (locale === 'en') return teacher.qualifications_en || teacher.qualifications_fr || '';
+  return teacher.qualifications_fr || teacher.qualifications_ar || '';
+}
+
+export function getLocalizedTeacherSpecialties(teacher: any, locale: Locale): string {
+  if (!teacher) return '';
+  if (locale === 'ar') return teacher.specialties_ar || teacher.specialties_fr || '';
+  if (locale === 'en') return teacher.specialties_en || teacher.specialties_fr || '';
+  return teacher.specialties_fr || teacher.specialties_ar || '';
+}

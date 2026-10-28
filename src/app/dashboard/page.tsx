@@ -89,7 +89,7 @@ export default function DashboardOverviewPage() {
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-muted)' }}>
-        {locale === 'ar' ? 'جاري تحميل لوحة التحكم...' : 'Chargement du tableau de bord...'}
+        {locale === 'ar' ? 'جاري تحميل لوحة التحكم...' : locale === 'en' ? 'Loading dashboard...' : 'Chargement du tableau de bord...'}
       </div>
     );
   }
@@ -111,25 +111,29 @@ export default function DashboardOverviewPage() {
       >
         <div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 900, margin: 0, color: 'var(--dark-brown)' }}>
-            {locale === 'ar' ? 'مرحباً بك في إدارة أكاديمية فصيح' : 'Tableau de Bord Opérationnel'}
+            {locale === 'ar' ? 'مرحباً بك في إدارة أكاديمية فصيح' : locale === 'en' ? 'Operational Management Dashboard' : 'Tableau de Bord Opérationnel'}
           </h1>
           <p style={{ margin: '0.3rem 0 0 0', color: 'var(--text-muted)', fontSize: '0.92rem' }}>
-            {locale === 'ar' ? 'متابعة شاملة للطلاب، الحصص، التسجيلات، والعمليات المالية' : 'Statistiques en direct issues de la base de données'}
+            {locale === 'ar'
+              ? 'متابعة شاملة للطلاب، الحصص، التسجيلات، والعمليات المالية'
+              : locale === 'en'
+              ? 'Real-time overview of students, sessions, registrations, and finances'
+              : 'Statistiques en direct issues de la base de données'}
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <Link href="/dashboard/schedule" className="btn-outline btn-sm">
             <Calendar size={15} color="var(--primary)" />
-            <span>{locale === 'ar' ? 'برمجة حصة' : 'Planifier séance'}</span>
+            <span>{locale === 'ar' ? 'برمجة حصة' : locale === 'en' ? 'Schedule Session' : 'Planifier séance'}</span>
           </Link>
           <Link href="/dashboard/courses" className="btn-outline btn-sm">
             <BookOpen size={15} color="var(--secondary)" />
-            <span>{locale === 'ar' ? 'إضافة دورة' : 'Nouveau cours'}</span>
+            <span>{locale === 'ar' ? 'إضافة دورة' : locale === 'en' ? 'New Course' : 'Nouveau cours'}</span>
           </Link>
           <Link href="/dashboard/payments" className="btn-primary btn-sm">
             <DollarSign size={15} />
-            <span>{locale === 'ar' ? 'تسجيل دفعة' : 'Encaisser paiement'}</span>
+            <span>{locale === 'ar' ? 'تسجيل دفعة' : locale === 'en' ? 'Record Payment' : 'Encaisser paiement'}</span>
           </Link>
         </div>
       </div>
@@ -294,10 +298,10 @@ export default function DashboardOverviewPage() {
         <div className="card" style={{ padding: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.15rem', margin: 0 }}>
-              {locale === 'ar' ? 'أحدث طلبات التسجيل' : 'Dernières Inscriptions'}
+              {locale === 'ar' ? 'أحدث طلبات التسجيل' : locale === 'en' ? 'Recent Registrations' : 'Dernières Inscriptions'}
             </h3>
             <Link href="/dashboard/enrollments" className="btn-outline btn-sm">
-              <span>{locale === 'ar' ? 'عرض الكل' : 'Voir tout'}</span>
+              <span>{locale === 'ar' ? 'عرض الكل' : locale === 'en' ? 'View All' : 'Voir tout'}</span>
               {dir === 'rtl' ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
             </Link>
           </div>
@@ -306,9 +310,9 @@ export default function DashboardOverviewPage() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>{locale === 'ar' ? 'الطالب' : 'Étudiant'}</th>
-                  <th>{locale === 'ar' ? 'الدورة' : 'Formation'}</th>
-                  <th>{locale === 'ar' ? 'الحالة' : 'Statut'}</th>
+                  <th>{locale === 'ar' ? 'الطالب' : locale === 'en' ? 'Student' : 'Étudiant'}</th>
+                  <th>{locale === 'ar' ? 'الدورة' : locale === 'en' ? 'Course' : 'Formation'}</th>
+                  <th>{locale === 'ar' ? 'الحالة' : locale === 'en' ? 'Status' : 'Statut'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -319,7 +323,9 @@ export default function DashboardOverviewPage() {
                       <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{e.student_phone}</span>
                     </td>
                     <td>
-                      <p style={{ margin: 0, fontSize: '0.85rem' }}>{locale === 'ar' ? e.course_title_ar : e.course_title_fr}</p>
+                      <p style={{ margin: 0, fontSize: '0.85rem' }}>
+                        {locale === 'ar' ? e.course_title_ar : locale === 'en' ? (e.course_title_en || e.course_title_fr) : e.course_title_fr}
+                      </p>
                     </td>
                     <td>{getStatusBadge(e.status)}</td>
                   </tr>
@@ -333,10 +339,10 @@ export default function DashboardOverviewPage() {
         <div className="card" style={{ padding: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
             <h3 style={{ fontSize: '1.15rem', margin: 0 }}>
-              {locale === 'ar' ? 'أحدث المعاملات المالية والوصولات' : 'Derniers Encaissements'}
+              {locale === 'ar' ? 'أحدث المعاملات المالية والوصولات' : locale === 'en' ? 'Recent Payments & Receipts' : 'Derniers Encaissements'}
             </h3>
             <Link href="/dashboard/payments" className="btn-outline btn-sm">
-              <span>{locale === 'ar' ? 'عرض المالية' : 'Voir finances'}</span>
+              <span>{locale === 'ar' ? 'عرض المالية' : locale === 'en' ? 'View Finances' : 'Voir finances'}</span>
               {dir === 'rtl' ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
             </Link>
           </div>
@@ -345,10 +351,10 @@ export default function DashboardOverviewPage() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>{locale === 'ar' ? 'الوصل' : 'Reçu'}</th>
-                  <th>{locale === 'ar' ? 'الطالب' : 'Étudiant'}</th>
-                  <th>{locale === 'ar' ? 'المبلغ' : 'Montant'}</th>
-                  <th>{locale === 'ar' ? 'الإجراء' : 'Action'}</th>
+                  <th>{locale === 'ar' ? 'الوصل' : locale === 'en' ? 'Receipt' : 'Reçu'}</th>
+                  <th>{locale === 'ar' ? 'الطالب' : locale === 'en' ? 'Student' : 'Étudiant'}</th>
+                  <th>{locale === 'ar' ? 'المبلغ' : locale === 'en' ? 'Amount' : 'Montant'}</th>
+                  <th>{locale === 'ar' ? 'الإجراء' : locale === 'en' ? 'Action' : 'Action'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -374,7 +380,7 @@ export default function DashboardOverviewPage() {
                         style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem', gap: '0.3rem' }}
                       >
                         <Printer size={13} />
-                        <span>{locale === 'ar' ? 'الوصل' : 'Reçu'}</span>
+                        <span>{locale === 'ar' ? 'الوصل' : locale === 'en' ? 'Receipt' : 'Reçu'}</span>
                       </button>
                     </td>
                   </tr>

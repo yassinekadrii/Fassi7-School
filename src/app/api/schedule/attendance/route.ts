@@ -10,10 +10,10 @@ export async function GET(request: Request) {
 
     const db = getDb();
 
-    // Case 1: Fetch all sessions & confirmed students for a course
+    // Case 1: Fetch all sessions, confirmed students, and full attendance matrix for a course
     if (courseId && !sessionId) {
       const course = db.prepare(`
-        SELECT c.*, tl.name_fr as language_name_fr, tl.name_ar as language_name_ar, tl.flag_emoji
+        SELECT c.*, tl.name_fr as language_name_fr, tl.name_ar as language_name_ar, tl.name_en as language_name_en, tl.flag_emoji
         FROM courses c
         JOIN teaching_languages tl ON tl.id = c.language_id
         WHERE c.id = ?
@@ -36,23 +36,31 @@ export async function GET(request: Request) {
         ORDER BY cs.start_time ASC
       `).all(courseId) as any[];
 
-      // All confirmed students in this course
+      // All enrolled students in this course (confirmed, accepted, awaiting_payment)
       const students = db.prepare(`
-        SELECT u.id, u.name, u.email, u.phone, u.avatar
+        SELECT u.id, u.name, u.email, u.phone, u.avatar, e.status as enrollment_status
         FROM enrollments e
         JOIN users u ON u.id = e.student_id
-        WHERE e.course_id = ? AND e.status IN ('confirmed', 'accepted')
+        WHERE e.course_id = ? AND e.status IN ('confirmed', 'accepted', 'awaiting_payment')
         ORDER BY u.name ASC
       `).all(courseId) as any[];
 
-      return NextResponse.json({ course, sessions, students });
+      // All attendance records across all sessions for this course
+      const attendanceMatrix = db.prepare(`
+        SELECT a.id, a.session_id, a.student_id, a.status, a.notes, a.recorded_at
+        FROM attendance a
+        JOIN class_sessions cs ON cs.id = a.session_id
+        WHERE cs.course_id = ?
+      `).all(courseId) as any[];
+
+      return NextResponse.json({ course, sessions, students, attendanceMatrix });
     }
 
     // Case 2: Fetch a specific session's attendance roster
     if (sessionId) {
       const session = db.prepare(`
-        SELECT cs.*, c.title_fr as course_title_fr, c.title_ar as course_title_ar,
-               tl.name_fr as language_name_fr, tl.flag_emoji
+        SELECT cs.*, c.title_fr as course_title_fr, c.title_ar as course_title_ar, c.title_en as course_title_en,
+               tl.name_fr as language_name_fr, tl.name_ar as language_name_ar, tl.name_en as language_name_en, tl.flag_emoji
         FROM class_sessions cs
         JOIN courses c ON c.id = cs.course_id
         JOIN teaching_languages tl ON tl.id = c.language_id
@@ -65,12 +73,12 @@ export async function GET(request: Request) {
 
       // Get all enrolled students in the course, along with any recorded attendance for this session
       const query = `
-        SELECT u.id as student_id, u.name as student_name, u.email as student_email, u.phone as student_phone,
+        SELECT u.id as student_id, u.name as student_name, u.email as student_email, u.phone as student_phone, u.avatar as student_avatar,
                a.status as attendance_status, a.notes as attendance_notes, a.recorded_at
         FROM enrollments e
         JOIN users u ON u.id = e.student_id
         LEFT JOIN attendance a ON a.session_id = ? AND a.student_id = u.id
-        WHERE e.course_id = ? AND e.status IN ('confirmed', 'accepted')
+        WHERE e.course_id = ? AND e.status IN ('confirmed', 'accepted', 'awaiting_payment')
         ORDER BY u.name ASC
       `;
 
@@ -102,7 +110,6 @@ export async function POST(request: Request) {
     const { action } = body;
 
     // Action A: Create a brand new session / attendance sheet for a course
-    // (Multiple sessions workflow: Séance 1, Séance 2, Séance 3...)
     if (action === 'create_session') {
       const { course_id, title_fr, title_ar, start_time, end_time, room_name } = body;
 
@@ -110,7 +117,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Course ID et date de séance requis' }, { status: 400 });
       }
 
-      // Teacher ID: if current user is teacher, use their ID; otherwise find the course's teacher or admin ID
       let teacherId = user.id;
       if (user.role !== 'teacher') {
         const existingSession = db.prepare('SELECT teacher_id FROM class_sessions WHERE course_id = ? LIMIT 1').get(course_id) as any;
@@ -119,14 +125,12 @@ export async function POST(request: Request) {
         }
       }
 
-      // Count existing sessions to auto-generate title if missing
       const countRes = db.prepare('SELECT COUNT(*) as cnt FROM class_sessions WHERE course_id = ?').get(course_id) as any;
       const sessionNumber = (countRes?.cnt || 0) + 1;
 
       const finalTitleFr = title_fr || `Séance ${sessionNumber} - Appel & Pratique`;
       const finalTitleAr = title_ar || `الحصة ${sessionNumber} - تفقد الحضور والتطبيق`;
 
-      // End time: default to 2 hours after start_time if not provided
       let finalEndTime = end_time;
       if (!finalEndTime) {
         const sDate = new Date(start_time.replace(' ', 'T'));
@@ -143,7 +147,7 @@ export async function POST(request: Request) {
           course_id, teacher_id, title_ar, title_fr, session_type,
           start_time, end_time, room_name, status, summary_notes
         )
-        VALUES (?, ?, ?, ?, 'group', ?, ?, ?, 'active', ?)
+        VALUES (?, ?, ?, ?, 'group', ?, ?, ?, 'scheduled', ?)
       `);
 
       const result = insertSession.run(
@@ -159,16 +163,14 @@ export async function POST(request: Request) {
 
       const newSessionId = Number(result.lastInsertRowid);
 
-      // Get all confirmed students for this course
       const students = db.prepare(`
-        SELECT u.id as student_id, u.name as student_name, u.email as student_email, u.phone as student_phone
+        SELECT u.id as student_id, u.name as student_name, u.email as student_email, u.phone as student_phone, u.avatar as student_avatar
         FROM enrollments e
         JOIN users u ON u.id = e.student_id
-        WHERE e.course_id = ? AND e.status IN ('confirmed', 'accepted')
+        WHERE e.course_id = ? AND e.status IN ('confirmed', 'accepted', 'awaiting_payment')
         ORDER BY u.name ASC
       `).all(course_id) as any[];
 
-      // Return new session details and student list
       const newSession = db.prepare('SELECT * FROM class_sessions WHERE id = ?').get(newSessionId);
 
       return NextResponse.json({
@@ -195,7 +197,7 @@ export async function POST(request: Request) {
         SELECT u.id as student_id
         FROM enrollments e
         JOIN users u ON u.id = e.student_id
-        WHERE e.course_id = ? AND e.status IN ('confirmed', 'accepted')
+        WHERE e.course_id = ? AND e.status IN ('confirmed', 'accepted', 'awaiting_payment')
       `).all(session.course_id) as any[];
 
       const insertOrUpdate = db.prepare(`
@@ -213,27 +215,50 @@ export async function POST(request: Request) {
       });
 
       tx(students);
-      return NextResponse.json({ success: true, count: students.length });
+
+      const counts = {
+        present_count: students.length,
+        absent_count: 0,
+        late_count: 0,
+        excused_count: 0,
+        total_recorded: students.length,
+      };
+
+      return NextResponse.json({ success: true, count: students.length, counts });
     }
 
-    // Action C: Default single student attendance update
+    // Action C: Default single student attendance update or reset
     const { session_id, student_id, status, notes } = body;
 
-    if (!session_id || !student_id || !status) {
-      return NextResponse.json({ error: 'Session, étudiant et statut requis' }, { status: 400 });
+    if (!session_id || !student_id) {
+      return NextResponse.json({ error: 'Session et étudiant requis' }, { status: 400 });
     }
 
-    const insertOrUpdate = db.prepare(`
-      INSERT INTO attendance (session_id, student_id, status, notes, recorded_at)
-      VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-      ON CONFLICT(session_id, student_id) DO UPDATE SET
-        status = excluded.status,
-        notes = excluded.notes,
-        recorded_at = CURRENT_TIMESTAMP
+    if (status === 'unmarked' || status === 'reset' || !status) {
+      db.prepare('DELETE FROM attendance WHERE session_id = ? AND student_id = ?').run(session_id, student_id);
+    } else {
+      const insertOrUpdate = db.prepare(`
+        INSERT INTO attendance (session_id, student_id, status, notes, recorded_at)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(session_id, student_id) DO UPDATE SET
+          status = excluded.status,
+          notes = excluded.notes,
+          recorded_at = CURRENT_TIMESTAMP
       `);
+      insertOrUpdate.run(session_id, student_id, status, notes || '');
+    }
 
-    insertOrUpdate.run(session_id, student_id, status, notes || '');
-    return NextResponse.json({ success: true });
+    // Fetch updated session tally counts
+    const counts = db.prepare(`
+      SELECT 
+        (SELECT COUNT(*) FROM attendance WHERE session_id = ? AND status = 'present') as present_count,
+        (SELECT COUNT(*) FROM attendance WHERE session_id = ? AND status = 'absent') as absent_count,
+        (SELECT COUNT(*) FROM attendance WHERE session_id = ? AND status = 'late') as late_count,
+        (SELECT COUNT(*) FROM attendance WHERE session_id = ? AND status = 'excused') as excused_count,
+        (SELECT COUNT(*) FROM attendance WHERE session_id = ?) as total_recorded
+    `).get(session_id, session_id, session_id, session_id, session_id) as any;
+
+    return NextResponse.json({ success: true, counts });
   } catch (error) {
     console.error('Error recording attendance:', error);
     return NextResponse.json({ error: 'Erreur d\'enregistrement de présence' }, { status: 500 });

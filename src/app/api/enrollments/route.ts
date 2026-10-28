@@ -24,9 +24,12 @@ export async function GET(request: Request) {
         u.phone as student_phone,
         c.title_ar as course_title_ar,
         c.title_fr as course_title_fr,
+        c.title_en as course_title_en,
+        c.level as course_level,
         c.price as course_price,
         tl.name_fr as language_name_fr,
         tl.name_ar as language_name_ar,
+        tl.name_en as language_name_en,
         tl.flag_emoji
       FROM enrollments e
       JOIN users u ON u.id = e.student_id

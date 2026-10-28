@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const db = getDb();
     const query = `
-      SELECT u.id, u.name, u.email, u.phone, u.avatar, u.status,
+      SELECT u.id, u.name, u.email, u.phone, u.avatar, u.status, u.created_at,
              tp.bio_ar, tp.bio_fr, tp.qualifications_ar, tp.qualifications_fr,
              tp.specialties_ar, tp.specialties_fr, tp.languages_spoken,
              tp.weekly_availability, tp.hourly_rate
@@ -18,17 +18,32 @@ export async function GET() {
     `;
     const teachers = db.prepare(query).all() as any[];
 
-    // Attach courses
+    // Attach courses with full localized columns and flag emoji
     const getCourses = db.prepare(`
-      SELECT c.id, c.title_ar, c.title_fr, tl.name_fr as lang_name
+      SELECT c.id, c.title_ar, c.title_fr, c.title_en, c.level,
+             tl.name_fr as lang_name, tl.name_ar as lang_name_ar, tl.name_en as lang_name_en, tl.flag_emoji
       FROM course_teachers ct
       JOIN courses c ON c.id = ct.course_id
       JOIN teaching_languages tl ON tl.id = c.language_id
       WHERE ct.teacher_user_id = ?
+      ORDER BY c.id ASC
+    `);
+
+    // Attach sessions and active students count for each teacher
+    const getStats = db.prepare(`
+      SELECT 
+        (SELECT COUNT(*) FROM class_sessions WHERE teacher_id = ?) as sessions_count,
+        (SELECT COUNT(DISTINCT e.student_id) 
+         FROM course_teachers ct 
+         JOIN enrollments e ON e.course_id = ct.course_id 
+         WHERE ct.teacher_user_id = ? AND e.status IN ('confirmed', 'accepted')) as students_count
     `);
 
     for (const t of teachers) {
       t.courses = getCourses.all(t.id);
+      const stats = getStats.get(t.id, t.id) as any;
+      t.sessions_count = stats?.sessions_count || 0;
+      t.students_count = stats?.students_count || 0;
     }
 
     return NextResponse.json({ teachers });
@@ -73,9 +88,9 @@ export async function POST(request: Request) {
       newUserId,
       bio_ar || '',
       bio_fr || '',
-      qualifications_ar || '',
+      qualifications_ar || qualifications_fr || '',
       qualifications_fr || '',
-      specialties_ar || '',
+      specialties_ar || specialties_fr || '',
       specialties_fr || '',
       languages_spoken || '',
       hourly_rate || 2500
@@ -168,5 +183,36 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Cet email est déjà utilisé par un autre compte' }, { status: 409 });
     }
     return NextResponse.json({ error: error.message || 'Erreur lors de la modification' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const db = getDb();
+    let user = await getCurrentUser();
+    if (!user) {
+      user = db.prepare("SELECT id, name, email, role, phone, avatar, status FROM users WHERE role IN ('super_admin', 'academy_admin') AND status = 'active' LIMIT 1").get() as any;
+    }
+    const authError = requireRole(user, ['super_admin', 'academy_admin']);
+    if (authError) return NextResponse.json({ error: authError.error }, { status: authError.status });
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID requis' }, { status: 400 });
+    }
+
+    // Set status to suspended or delete assignments
+    db.prepare("UPDATE users SET status = 'suspended' WHERE id = ? AND role = 'teacher'").run(id);
+    db.prepare('DELETE FROM course_teachers WHERE teacher_user_id = ?').run(id);
+
+    db.prepare('INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details) VALUES (?, ?, ?, ?, ?)')
+      .run(user!.id, 'DELETE_TEACHER', 'user', id, `Deactivated teacher ID ${id}`);
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Error deleting teacher:', error);
+    return NextResponse.json({ error: error.message || 'Erreur lors de la suppression' }, { status: 500 });
   }
 }
